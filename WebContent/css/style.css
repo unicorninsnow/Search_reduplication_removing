@@ -1,0 +1,45 @@
+
+/*菜单样式*/ 
+#basic-accordian{ 
+width:20%; 
+z-index:2; 
+margin-top: 2%; 
+border-top-style: solid; 
+border-top-color: #999999; 
+border-bottom-style: solid; 
+border-bottom-color: #666666; 
+padding-top: 15px; 
+padding-bottom: 15px; 
+margin-bottom: 2%; 
+}/*菜单背景*/ 
+.accordion_headings{ 
+padding:2px; 
+cursor:pointer; 
+font-weight:bold; 
+font-size: 14px; 
+line-height: 25px; 
+letter-spacing: 1px; 
+}/*菜单分类行*/ 
+.accordion_headings:hover{ 
+} 
+.accordion_child{ 
+padding-left: 20px; 
+padding-bottom: 8px; 
+} 
+.accordion_child ul{} 
+.accordion_child ul li{ 
+font-size: 12px; 
+display: block; 
+line-height: 20px; 
+display:block; 
+} 
+.accordion_child ul li a{ 
+text-decoration: none; 
+color: #666666; 
+} 
+.accordion_child ul li a:hover{ 
+color: #FFFFFF; 
+} 
+.header_highlight{ 
+}/*当前显示菜单分类样式*/ 
+/*菜单样式结束*/ 
