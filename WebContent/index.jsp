@@ -15,18 +15,21 @@
         <center>
             <img src="images/banner.png" alt="">
             <br/>
-                <input type="text" maxlength="2048" size="51" id="content" name="txtContent" value="" style="font-size:16px;height:25px;"/>
+                            <div class="buttons">
+                <input type="text" maxlength="2048" size="51" id="content" name="wd" value="" style="font-size:16px;height:25px;"/>
                 <br/><br/><br/>
-                <div class="buttons">
-                    <button type="submit" class="positive" name="save" onclick="onSearch()">
+
+                    <button type="submit" class="positive" onclick="onSearch()">
                         <img src="images/apply2.png" alt=""/>
                         Search
                     </button>
-                </div>
+                
+            </div>
         </center>
         <script type="text/javascript">
             function onSearch(){
                 var content = document.getElementById("content").value;
+                content = encodeURI(encodeURI(content));
                 window.location.href = "results.jsp?wd=" + content;
             }
         </script>

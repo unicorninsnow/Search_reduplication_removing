@@ -1,12 +1,13 @@
 <%@ page language="java" pageEncoding="UTF-8"
 	contentType="text/html; charset=UTF-8"%>
+<%@ page import="java.net.URLDecoder"%>
 <%-- 
     Document   : results
     Created on : 2013-4-21, 15:12:21
     Author     : oubeichen
 --%>
 <%
-	String content = request.getParameter("wd");
+	String content = URLDecoder.decode(request.getParameter("wd"),"UTF-8");
 	if (content == null) {
 		content = "";
 	}
@@ -26,6 +27,7 @@
 	}
 	function onSearch() {
 		var content = document.getElementById("content").value;
+		content = encodeURI(encodeURI(content));
 		window.location.href = "results.jsp?wd=" + content;
 	}
 	function show(obj) {
