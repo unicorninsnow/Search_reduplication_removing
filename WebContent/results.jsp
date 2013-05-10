@@ -74,7 +74,7 @@
 		<li style="list-style-type: none;">
 			<div class="difres">
 				<a href="http://www.ymzj.cn/thread-499-1-1.html" onmousedown=""
-					target="_blank">HTML5实例教程</a>
+					target="_blank"><%=content %></a>
 				<div class="s">
 					<div>
 						<div class="url"
@@ -114,7 +114,7 @@
 					<li style="list-style-type: none;">
 			<div class="difres">
 				<a href="http://www.ymzj.cn/thread-499-1-1.html" onmousedown=""
-					target="_blank">HTML5实例教程</a>
+					target="_blank"><%=content %></a>
 				<div class="s">
 					<div>
 						<div class="url"
