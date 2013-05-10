@@ -21,7 +21,7 @@ public class Similarity_Judgement {
 	private static List<String> list = new ArrayList<String>();
 	public static void main(String[] args) throws Exception
 	{
-		InputStreamReader isr = new InputStreamReader(new FileInputStream(new File("D:\\test folder\\clustertest2.txt")),Charset.defaultCharset());
+		InputStreamReader isr = new InputStreamReader(new FileInputStream(new File("D:\\test folder\\clustertest.txt")),Charset.defaultCharset());
 		BufferedReader br = new BufferedReader(isr);
 		//identity_judge();		
 		String punc_regex = "[。？！，.,?!]";		//匹配任一符号的正则表达式
