@@ -1,4 +1,4 @@
-import java.io.*;
+ï»¿import java.io.*;
 import java.nio.charset.Charset;
 import java.util.regex.*;
 import java.util.ArrayList;
@@ -14,9 +14,9 @@ public class Similarity_Judgement {
 	//public static String[] splited_strings = new String[20];
 	/*public static void split_test()
 	{
-		//String s = "ÕâÊÇÒ»¸ö£¬°´¾ä×Ó·Ö´ÊµÄ£¬¼òµ¥²âÊÔ£¡¿ÉÒÔÂğ£¿";
+		//String s = "è¿™æ˜¯ä¸€ä¸ªï¼ŒæŒ‰å¥å­åˆ†è¯çš„ï¼Œç®€å•æµ‹è¯•ï¼å¯ä»¥å—ï¼Ÿ";
 		String s = "This is a,test for,seperator!Can it work?";
-		//splited_strings = s.split("¡£|£¿|£¡|£¬|\\.|,|\\?|!");  //Ó¢ÎÄµÄ¾äºÅºÍÎÊºÅĞèÒª×ªÒå
+		//splited_strings = s.split("ã€‚|ï¼Ÿ|ï¼|ï¼Œ|\\.|,|\\?|!");  //è‹±æ–‡çš„å¥å·å’Œé—®å·éœ€è¦è½¬ä¹‰
 	}*/
 	private static List<String> list = new ArrayList<String>();
 	public static void main(String[] args) throws Exception
@@ -24,20 +24,20 @@ public class Similarity_Judgement {
 		InputStreamReader isr = new InputStreamReader(new FileInputStream(new File("D:\\test folder\\clustertest.txt")),Charset.defaultCharset());
 		BufferedReader br = new BufferedReader(isr);
 		//identity_judge();		
-		String punc_regex = "[¡££¿£¡£¬.,?!]";		//Æ¥ÅäÈÎÒ»·ûºÅµÄÕıÔò±í´ïÊ½
-		Pattern punc_pat = Pattern.compile(punc_regex);	//from java.util.regex£¬´´½¨Ò»¸ö»ùÓÚÉÏÃæµÄregexµÄpattern
+		String punc_regex = "[ã€‚ï¼Ÿï¼ï¼Œ.,?!]";		//åŒ¹é…ä»»ä¸€ç¬¦å·çš„æ­£åˆ™è¡¨è¾¾å¼
+		Pattern punc_pat = Pattern.compile(punc_regex);	//from java.util.regexï¼Œåˆ›å»ºä¸€ä¸ªåŸºäºä¸Šé¢çš„regexçš„pattern
 		String line = null;
 		while ((line = br.readLine())!= null)
 		{
-			Matcher punc_mat = punc_pat.matcher(line);	//from java.util.regex£¬ÓÃ¶ÁÈëµÄline´´½¨Matcher
+			Matcher punc_mat = punc_pat.matcher(line);	//from java.util.regexï¼Œç”¨è¯»å…¥çš„lineåˆ›å»ºMatcher
 			String[] substrs = punc_pat.split(line);
 			if (substrs.length>0)
 			{
 				int count = 0;
 				while (count < substrs.length)
 				{
-					if(punc_mat.find())		//Æ¥ÅäÏÂÒ»¸ö±êµã
-						substrs[count] += punc_mat.group();		//½«±êµã¼ÓÈëÔ­¾äÖĞ
+					if(punc_mat.find())		//åŒ¹é…ä¸‹ä¸€ä¸ªæ ‡ç‚¹
+						substrs[count] += punc_mat.group();		//å°†æ ‡ç‚¹åŠ å…¥åŸå¥ä¸­
 					list.add(substrs[count]);
 					count++;
 				}
@@ -51,6 +51,6 @@ public class Similarity_Judgement {
 		/*for (int i = 0; i<splited_strings.length; i++)
 			System.out.println(splited_strings[i]);*/
 		
-		//»¹ĞèÍê³É¿Õ¸ñÌæ»»
+		//è¿˜éœ€å®Œæˆç©ºæ ¼æ›¿æ¢
 	}
 }
