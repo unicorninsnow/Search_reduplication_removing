@@ -1,12 +1,17 @@
-<%@ page language="java" pageEncoding="UTF-8"
-	contentType="text/html; charset=UTF-8"%>
-<%@ page import="java.net.URLDecoder"%>
+﻿<%@page import="clustered.Clusteredresult_Node"%>
+<%@page import="clustered.Clustered"%>
+<%@page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="clustered.*"%>
+<%@page import="java.net.URLEncoder"%>
+<%@page import="java.net.URLDecoder"%>
 <%-- 
     Document   : results
     Created on : 2013-4-21, 15:12:21
     Author     : oubeichen
 --%>
 <%
+
 	String content = URLDecoder.decode(request.getParameter("wd"),
 			"UTF-8");
 	if (content == null) {
@@ -14,6 +19,16 @@
 	}
 	/*TODO:数据库读取具体内容之前先读取行数，然后进行分页操作
 	 */
+	 
+	 /*利用谷歌API来获取搜索结果用于测试*/
+	 String gapiurl = "https://www.googleapis.com/customsearch/v1?key=AIzaSyC6H3srhmy5nYxDLh9hdSOoqoVfCoK7vKE&cx=016107310399893718915:kqe8vf9-tza&q="
+	 + URLEncoder.encode(content, "UTF-8") +"&alt=json";
+	 Clustered fun = new Clustered();
+
+	 if(content != null && content != "")
+	 {
+	 	fun.putinlist(gapiurl);
+	 }
 %>
 <!DOCTYPE html>
 <html>
@@ -73,40 +88,55 @@
 	</div>
 	<div class="r">
 		<ol id="outerres">
+			<%
+ 			if(content != null && content != ""){
+			for(int i = 0;i < 5;i++){ 
+			Clusteredresult_Node node = fun.getlist().get(i).gethead(),nodep;
+			%>
 			<li style="list-style-type: none;">
 				<div class="difres">
-					<a href="http://www.ymzj.cn/thread-499-1-1.html" onmousedown=""
-						target="_blank"><%=content%></a>
+					<a href="<%=node.geturl() %>" onmousedown=""
+						target="_blank"><%=node.gettitle()
+						%></a>
 					<div class="s">
 						<div>
 							<div class="url"
 								style="white-space:nowrap;color: rgb(0, 153, 51);">
-								<cite>www.ymzj.cn/thread-499-1-1.html</cite>
+								<cite><%=node.geturl() %></cite>
 							</div>
 							<div class="cont"></div>
-							<span class="st" style="font-size: 13px;">HTML5实例教程:<em>OL标签</em>的start属性和reversed属性,源码之家.
-								<b>...</b> start属性用来定义列表<em>编号</em>的起始位置，比如下面的代码，列表将从50开始51...55以此类推
-								&lt;ol <b>...</b> </span>
+							<span class="st" style="font-size: 13px;"><%=node.getabs() %></span>
 						</div>
 					</div>
-					<button type="submit" onclick="showSameres(this,'sres1')">相同结果1</button>
-					<div id="sres1" class="sres" style="display:none">
+					<button type="submit" onclick="showSameres(this,'sres<%=i%>')">相同结果</button>
+					<div id="sres<%=i %>" class="sres" style="display:none">
 						<ul>
-							<li>a</li>
-							<li>b</li>
-							<li>c</li>
+						<% 	nodep = node.getnext();
+							while(nodep != null)
+							{
+						 %>
+							<li><a href="<%=nodep.geturl() %>"><%=nodep.gettitle()%></a></li>
+						<%
+							nodep = nodep.getnext();
+							} 
+						%>
 						</ul>
 					</div>
 					<div id="basic-accordian">
 						<!--菜单开始-->
-						<div id="test-header" class="accordion_headings">相同结果1</div>
-						<div id="test-content">
+						<div id="test<%=i %>-header" class="accordion_headings">相同结果</div>
+						<div id="test<%=i %>-content">
 							<div class="accordion_child">
 								<ul>
-									<li><a href="">网页A</a>
-									</li>
-									<li><a href="">网页B</a>
-									</li>
+						<% 	nodep = node.getnext();
+							while(nodep != null)
+							{
+						 %>
+							<li><a href="<%=nodep.geturl() %>"><%=nodep.gettitle()%></a></li>
+						<%
+							nodep = nodep.getnext();
+							} 
+						%>
 								</ul>
 							</div>
 						</div>
@@ -115,48 +145,8 @@
 
 				</div>
 			</li>
-			<li style="list-style-type: none;">
-				<div class="difres">
-					<a href="http://www.ymzj.cn/thread-499-1-1.html" onmousedown=""
-						target="_blank"><%=content%></a>
-					<div class="s">
-						<div>
-							<div class="url"
-								style="white-space:nowrap;color: rgb(0, 153, 51);">
-								<cite>www.ymzj.cn/thread-499-1-1.html</cite>
-							</div>
-							<div class="cont"></div>
-							<span class="st" style="font-size: 13px;">HTML5实例教程:<em>OL标签</em>的start属性和reversed属性,源码之家.
-								<b>...</b> start属性用来定义列表<em>编号</em>的起始位置，比如下面的代码，列表将从50开始51...55以此类推
-								&lt;ol <b>...</b> </span>
-						</div>
-					</div>
-					<button type="submit" onclick="showSameres(this,'sres2')">相同结果2</button>
-					<div id="sres2" class="sres" style="display:none">
-						<ul>
-							<li>a</li>
-							<li>b</li>
-							<li>c</li>
-						</ul>
-					</div>
-					<div id="basic-accordian">
-						<!--菜单开始-->
-						<div id="test1-header" class="accordion_headings">相同结果2</div>
-						<div id="test1-content">
-							<div class="accordion_child">
-								<ul>
-									<li><a href="">网页A</a>
-									</li>
-									<li><a href="">网页B</a>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<!--菜单结束-->
-
-				</div>
-			</li>
+			<%} 
+			}%>
 		</ol>
 	</div>
 </body>
