@@ -5,52 +5,76 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Similarity_Judgement {
-
-	/*public static void identity_judge()
+public class Similarity_Judgement 
+{	
+	private static List<String> list1 = new ArrayList<String>();	
+	private static List<String> list2 = new ArrayList<String>();	//存储两篇文章分句的结果list
+	private static int SENTENCE_MINLEN = 5;		//作为句子存储的最小长度
+	private static double JUDGE_RATIO = 0.8;	//判断相似的阈值
+	
+	/* 分割以String保存的正文 */
+	public static void article_divide(String str,	List<String> list)
 	{
-		
-	}*/
-	//public static String[] splited_strings = new String[20];
-	/*public static void split_test()
-	{
-		//String s = "这是一个，按句子分词的，简单测试！可以吗？";
-		String s = "This is a,test for,seperator!Can it work?";
-		//splited_strings = s.split("。|？|！|，|\\.|,|\\?|!");  //英文的句号和问号需要转义
-	}*/
-	private static List<String> list = new ArrayList<String>();
-	public static void main(String[] args) throws Exception
-	{
-		InputStreamReader isr = new InputStreamReader(new FileInputStream(new File("D:\\test folder\\clustertest.txt")),Charset.defaultCharset());
-		BufferedReader br = new BufferedReader(isr);
-		//identity_judge();		
-		String punc_regex = "[。？！，.,?!]";		//匹配任一符号的正则表达式
+		String punc_regex = "[。？！，.,?!\\s]";		// \s代表空格
 		Pattern punc_pat = Pattern.compile(punc_regex);	//from java.util.regex，创建一个基于上面的regex的pattern
-		String line = null;
-		while ((line = br.readLine())!= null)
+		Matcher punc_mat = punc_pat.matcher(str);
+		String[] substrs = punc_pat.split(str);
+		int count = 0;
+		while (count < substrs.length)
 		{
-			Matcher punc_mat = punc_pat.matcher(line);	//from java.util.regex，用读入的line创建Matcher
-			String[] substrs = punc_pat.split(line);
-			if (substrs.length>0)
-			{
-				int count = 0;
-				while (count < substrs.length)
-				{
-					if(punc_mat.find())		//匹配下一个标点
-						substrs[count] += punc_mat.group();		//将标点加入原句中
-					list.add(substrs[count]);
-					count++;
-				}
-			}
+			if (substrs[count].length() >= SENTENCE_MINLEN)
+				list.add(substrs[count]);
+			count ++;
 		}
-		br.close();
-		isr.close();
+
 		for (Iterator i = list.iterator(); i.hasNext();) 
 			System.out.println(i.next());
-		//split_test();
-		/*for (int i = 0; i<splited_strings.length; i++)
-			System.out.println(splited_strings[i]);*/
+	}
+	
+	/* 相似度判断 */
+	public static boolean similarity_judge(String article1, String article2)
+	{
+		article_divide(article1, list1);
+		article_divide(article2, list2);
+		int all1= list1.size(), all2 = list2.size(), same = 0;
+		String str;
+		for (int i = 0; i < all2; i++)
+		{
+			str = list2.get(i);
+			if  (list1.contains(str)) same ++;
+		}
+		double ratio = (double)same / all1; 
+		System.out.println(same);
+		System.out.println(all1);
+		System.out.println(all2);
+		System.out.println(ratio);
+		if (ratio > JUDGE_RATIO) return true;
+		else return false;
+	}
+	
+	/*	从文件中读取文章（用于测试） */
+	public static String strfromfile(String file) throws IOException
+	{
+		InputStreamReader isr = new InputStreamReader(new FileInputStream(new File(file)),Charset.defaultCharset());
+		BufferedReader br = new BufferedReader(isr);
+		String line = null;
+		StringBuffer buffer = new StringBuffer();	//用以存储正文字符串的buffer
 		
-		//还需完成空格替换
+		while ((line = br.readLine())!= null)
+			buffer.append(line);
+		
+		br.close();
+		isr.close();
+		
+		return buffer.toString();
+	}
+	
+	public static void main(String[] args) throws Exception
+	{
+		String str1 = strfromfile("D:\\test folder\\clustertest1.txt");
+		//String str2 = strfromfile("D:\\test folder\\clustertest2.txt");
+		String str2 = strfromfile("D:\\test folder\\clustertest3.txt");
+		Boolean is_similar = similarity_judge(str1, str2);
+		System.out.println(is_similar);
 	}
 }
