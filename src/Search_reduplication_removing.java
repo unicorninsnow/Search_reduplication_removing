@@ -90,6 +90,8 @@ public class Search_reduplication_removing {
 		/**
 		* 根据URL 和网页类型生成需要保存的网页的文件名，去除URL 中的非文件名字符
 		*/
+		
+		byte[] responseBody;
 		public String getFileNameByUrl(String url,String contentType)
 		{
 			//移除http://
@@ -122,8 +124,8 @@ public class Search_reduplication_removing {
 			}
 		}
 		//下载URL指向的网页
-		public String downloadFile(String url,String filePath){
-			//String filePath = null;
+		public String downloadFile(String url/*,String filePath*/){
+			String filePath = null;
 			HttpClient httpClient = new HttpClient();
 			httpClient.getHostConfiguration().setProxy("127.0.0.1", 8118);
 			//设置HTTP连接超时5s
@@ -144,14 +146,14 @@ public class Search_reduplication_removing {
 				}
 
 				// 处理HTTP响应内容
-				byte[] responseBody = getMethod.getResponseBody();// 读取为字节数组
+				responseBody = getMethod.getResponseBody();// 读取为字节数组
 				// 根据网页url 生成保存时的文件名
 				/*filePath = "temp\\"
 						+ getFileNameByUrl(url,
 								getMethod.getResponseHeader("Content-Type")
 										.getValue());*/
 				//filePath = "test_117.htm";
-				saveToLocal(responseBody, filePath);
+//				saveToLocal(responseBody, filePath);
 			} catch (HttpException e) {
 				// 发生致命的异常，可能是协议不对或者返回的内容有问题
 				System.out.println("Please check your provided http address!");
@@ -188,14 +190,16 @@ public class Search_reduplication_removing {
 				search_mode -= 32;
 			// System.out.println(search_mode);
 
-			search_word = "新时代的机器学习";
+			search_word = "C99新特性";
 			BufferedReader search_word_reader = new BufferedReader(
 					new InputStreamReader(System.in));
 			//System.out.println("请输入搜索关键词");
 			//search_word_reader.readLine();
+			assert(!(search_word.equals("")));
+			if((search_word.equals(""))){System.out.println("空搜索关键词");return;}
 			
-			Noofpagestoaccess = 3;
-			
+			Noofpagestoaccess = 0;
+			assert(Noofpagestoaccess > 0);
 			return;
 		}
 
@@ -243,45 +247,23 @@ public class Search_reduplication_removing {
 			return;
 		}
 		
-		public void access_to_multi_page () throws ParserException{
-			String url_one_page = search_url;
-			Parser multi_page_parser = new Parser();
-			multi_page_parser.setURL(search_url);
-			NodeFilter page_filter;
-			/* switch (search_mode) {
+		public void access_to_appointed_page () throws ParserException{
+			assert(Noofpagestoaccess > 0);
+			switch (search_mode) {
 			case 'B':
 				// 百度
-				page_filter = new HasAttributeFilter("id", "page");
+				search_url = search_url + "&pn=" + (Noofpagestoaccess-1) + "0";
+				System.out.println(search_url);
+				extractLinks(search_url, search_mode);
 				break;
 			case 'G':
 				// google
-				//暂缺
+				search_url = search_url + "&start=" + (Noofpagestoaccess-1) + "0";
+				System.out.println(search_url);
+				extractLinks(search_url, search_mode);
 				break;
 			default:
-			}*/
-			for (int i = 0; i < Noofpagestoaccess; ++i) {
-				System.out.println("It's page " + (i + 1));
-				switch (search_mode) {
-				case 'B':
-					// 百度
-					page_filter = new HasAttributeFilter("id", "page");
-					extractLinks(url_one_page, search_mode/*, result_links*/);
-					NodeList page_nodes = multi_page_parser.extractAllNodesThatMatch(page_filter);
-					assert(page_nodes.size() != 1);
-					//System.out.println(page_nodes.elementAt(0).getLastChild().getPreviousSibling().toPlainTextString());
-					url_one_page = ((LinkTag)page_nodes.elementAt(0).getLastChild().getPreviousSibling()).getLink();
-					//System.out.println(url_one_page);
-					multi_page_parser.setURL(url_one_page);
-					break;
-				case 'G':
-					// google
-					// 暂缺
-					break;
-				default:
-				}
 			}
-			
-			//System.out.println(result_links);
 		}
 		
 		
@@ -294,7 +276,8 @@ public class Search_reduplication_removing {
 			//Set<String> result_links = new HashSet<String>();
 			try {
 				Parser parser = new Parser();
-				// parser.setEncoding("utf-8");
+				
+				parser.setEncoding("utf-8");
 
 				parser.getConnectionManager().setProxyHost("127.0.0.1");
 				parser.getConnectionManager().setProxyPort(8118);
@@ -303,6 +286,7 @@ public class Search_reduplication_removing {
 				
 				switch (search_mode) {
 				case 'B':// 百度
+					//parser.setEncoding("utf-8");
 					NodeFilter result_filter_regu = new HasAttributeFilter("class", "result");
 					NodeFilter result_filter_op = new HasAttributeFilter("class", "result-op");
 					OrFilter result_filter = new OrFilter(result_filter_regu,result_filter_op);
@@ -314,7 +298,7 @@ public class Search_reduplication_removing {
 					// NodeList nodes =
 					// parser.extractAllNodesThatMatch(result_filter);
 
-					System.out.println("it's test");
+					System.out.println("it's test_baidu");
 					if (nodes != null) {
 						for (int i = 0; i < nodes.size(); ++i) {
 							// 逐个取出符合条件的链接结点
@@ -354,6 +338,12 @@ public class Search_reduplication_removing {
 					break;
 
 				case 'G':// google
+					//parser.setEncoding("gb2312");
+					
+					//DownLoadFile downloadhtml;
+					//downloadhtml.downloadFile(url);
+					
+					
 					NodeFilter linkclass_r = new HasAttributeFilter("class","r");//用于google的链接结点过滤
 					NodeFilter linkclass_st = new HasAttributeFilter("class","st");//用于google的链接描述文字结点过滤
 					/*NodeFilter result_child_filter = new HasParentFilter(
@@ -507,7 +497,8 @@ public class Search_reduplication_removing {
 		
 		htmlparsertool.putin();
 		htmlparsertool.choose_engine_search_word();
-		htmlparsertool.access_to_multi_page();
+		htmlparsertool.access_to_appointed_page();
+		
 		
 		result_links = htmlparsertool.get_result_links();
 		result_links.output_all_links();
