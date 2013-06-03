@@ -36,7 +36,7 @@ public class Search_word_process {
 		assert(!(search_word.equals("")));
 		if((search_word.equals(""))){System.out.println("空搜索关键词");return;}
 		
-		Noofpagetoaccess = 0;
+		Noofpagetoaccess = 2;
 		assert(Noofpagetoaccess > 0);
 		return;
 	}
@@ -105,4 +105,15 @@ public class Search_word_process {
 		}
 	}
 	
+	public char getsearch_mode() {
+		return search_mode;
+	}
+	
+	public String getsearch_url() {
+		return search_url;
+	}
+	
+	public int getNoofpagetoaccess() {
+		return Noofpagetoaccess;
+	}
 }

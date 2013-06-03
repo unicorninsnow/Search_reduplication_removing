@@ -19,9 +19,10 @@ public class Search_engine_process {
 	Link_queue result_links = new Link_queue();
 	
 
-	public void extractLinks(String url,char search_mode/*,Set<String> result_links*/) {
+	public void extractLinks(String url,char search_mode,int Noofpagetoaccess/*,Set<String> result_links*/) {
 		//Set<String> result_links = new HashSet<String>();
 		try {
+			
 			Parser parser = new Parser();
 			
 			parser.setEncoding("utf-8");
@@ -77,6 +78,10 @@ public class Search_engine_process {
 					//	System.out.println(describe_text);
 						result_link_struct.setLink_abstract(describe_text);
 						//result_links.get_last_link().link_abstract = describe_text;
+						
+						
+						//确定第几页
+						result_link_struct.setLink_page_from(Noofpagetoaccess);
 						
 						result_links.add_link(result_link_struct);
 					//	System.out.println("******==================******");
@@ -146,4 +151,7 @@ public class Search_engine_process {
 		return;
 	}
 
+	public Link_queue getresult_links(){
+		return result_links;
+	}
 }
