@@ -189,7 +189,7 @@
 								+ URLEncoder.encode(
 										URLEncoder.encode(content, "UTF-8"),
 										"UTF-8") + "&page=" + (nowpage - 1)
-								+ ">上一页</a>");
+								+ ">上一页</a>&nbsp;&nbsp;&nbsp;" + "第 " + nowpage + " 页" + "&nbsp;&nbsp;");
 					}
 			%>
 			<%
