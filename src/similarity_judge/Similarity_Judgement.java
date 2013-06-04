@@ -14,13 +14,13 @@ import com.chenlb.mmseg4j.Word;
 
 public class Similarity_Judgement 
 {	
-	private static List<String> list1 = new ArrayList<String>();	
-	private static List<String> list2 = new ArrayList<String>();	//存储两篇文章分句的结果list
-	private static int SENTENCE_MINLEN = 5;		//作为句子存储的最小长度
-	private static double JUDGE_RATIO = 0.8;	//判断相似的阈值
-	private static int MAX_HAMMING_DIS = 2;	//文本相似的hamming距离
+	private  List<String> list1 = new ArrayList<String>();	
+	private  List<String> list2 = new ArrayList<String>();	//存储两篇文章分句的结果list
+	private  int SENTENCE_MINLEN = 5;		//作为句子存储的最小长度
+	private  double JUDGE_RATIO = 0.8;	//判断相似的阈值
+	private  int MAX_HAMMING_DIS = 2;	//文本相似的hamming距离
 	/* 分割以String保存的正文 */
-	public static void article_divide(String str,	List<String> list)
+	public  void article_divide(String str,	List<String> list)
 	{
 		String punc_regex = "[。？！，.,?!\\s]";		// \s代表空格
 		Pattern punc_pat = Pattern.compile(punc_regex);	//from java.util.regex，创建一个基于上面的regex的pattern
@@ -39,7 +39,7 @@ public class Similarity_Judgement
 	}
 	
 	/* 相似度判断 */
-	public static boolean similarity_judge(String article1, String article2, int algo_choice) throws IOException
+	public  boolean similarity_judge(String article1, String article2, int algo_choice) throws IOException
 	{
 		boolean is_similar = false;
 		if (algo_choice == 1)	//选择最简单的判重算法 
@@ -79,7 +79,7 @@ public class Similarity_Judgement
 		return is_similar;
 	}
 	
-	public static int get_distance(char[] fp1, char[] fp2)
+	public  int get_distance(char[] fp1, char[] fp2)
 	{
 		int dis = 0;
 		for (int i = 0; i<32; i++)
@@ -87,7 +87,7 @@ public class Similarity_Judgement
 		return dis;
 	}
 	
-	public static char[] getfp(Reader article1, Seg seg) throws IOException
+	public  char[] getfp(Reader article1, Seg seg) throws IOException
 	{
 		char[] fp = new char[32];
 		MMSeg mmseg = new MMSeg(article1, seg);
@@ -116,7 +116,7 @@ public class Similarity_Judgement
 		return fp;
 	}
 	
-	public static char[] tobinary(int x)
+	public  char[] tobinary(int x)
 	{
 		char[] bichar = new char[32];
         for (int i = 31; i >= 0; i--) {
@@ -131,7 +131,7 @@ public class Similarity_Judgement
 	
 	
 	/*	从文件中读取文章（用于测试） */
-	public static String strfromfile(String file) throws IOException
+	public  String strfromfile(String file) throws IOException
 	{
 		InputStreamReader isr = new InputStreamReader(new FileInputStream(new File(file)),Charset.defaultCharset());
 		BufferedReader br = new BufferedReader(isr);
@@ -145,17 +145,6 @@ public class Similarity_Judgement
 		return buffer.toString();
 	}
 	
-	public static void main(String[] args) throws Exception
-	{
-		String str1 = strfromfile("test folder\\clustertest1.txt");
-		String str2 = strfromfile("test folder\\clustertest2.txt");
-		String str3 = strfromfile("test folder\\clustertest3.txt");
-		String str4 = strfromfile("test folder\\clustertest4.txt");
-		//Boolean is_similar = similarity_judge(str1, str2);
-		//Boolean is_similar = similarity_judge(str1, str3);
-		Boolean is_similar1 = similarity_judge(str1, str2, 1);
-		Boolean is_similar2 = similarity_judge(str1, str4, 1);
-		System.out.println(is_similar1);
-		System.out.println(is_similar2);	
-	}
+	
 }
+
