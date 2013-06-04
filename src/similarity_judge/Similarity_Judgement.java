@@ -1,4 +1,5 @@
-﻿import java.io.*;
+﻿package similarity_judge;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.regex.*;
 import java.util.ArrayList;
