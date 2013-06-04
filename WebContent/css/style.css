@@ -1,17 +1,18 @@
 
-/*èœå•æ ·å¼*/ 
+/*²Ëµ¥ÑùÊ½*/ 
 #basic-accordian{ 
-width:20%; 
+width:80%; 
 z-index:2; 
 margin-top: 2%; 
 border-top-style: solid; 
 border-top-color: #999999; 
 border-bottom-style: solid; 
-border-bottom-color: #666666; 
+border-bottom-color: #666666;
+/*
 padding-top: 15px; 
-padding-bottom: 15px; 
+padding-bottom: 15px; */
 margin-bottom: 2%; 
-}/*èœå•èƒŒæ™¯*/ 
+}/*²Ëµ¥±³¾°*/ 
 .accordion_headings{ 
 padding:2px; 
 cursor:pointer; 
@@ -19,7 +20,7 @@ font-weight:bold;
 font-size: 14px; 
 line-height: 25px; 
 letter-spacing: 1px; 
-}/*èœå•åˆ†ç±»è¡Œ*/ 
+}/*²Ëµ¥·ÖÀàĞĞ*/ 
 .accordion_headings:hover{ 
 } 
 .accordion_child{ 
@@ -32,6 +33,10 @@ font-size: 12px;
 display: block; 
 line-height: 20px; 
 display:block; 
+}
+.accordion_child ul li span{ 
+text-decoration: none; 
+color: #666666; 
 } 
 .accordion_child ul li a{ 
 text-decoration: none; 
@@ -41,5 +46,5 @@ color: #666666;
 color: #FFFFFF; 
 } 
 .header_highlight{ 
-}/*å½“å‰æ˜¾ç¤ºèœå•åˆ†ç±»æ ·å¼*/ 
-/*èœå•æ ·å¼ç»“æŸ*/ 
+}/*µ±Ç°ÏÔÊ¾²Ëµ¥·ÖÀàÑùÊ½*/ 
+/*²Ëµ¥ÑùÊ½½áÊø*/ 

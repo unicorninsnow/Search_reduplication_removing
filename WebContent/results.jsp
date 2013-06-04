@@ -1,6 +1,7 @@
 ﻿<%@page import="clustered.Clusteredresult_Node"%>
 <%@page import="clustered.Clustered"%>
-<%@page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
+<%@page language="java" pageEncoding="UTF-8"
+	contentType="text/html; charset=UTF-8"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="clustered.*"%>
 <%@page import="java.net.URLEncoder"%>
@@ -11,24 +12,37 @@
     Author     : oubeichen
 --%>
 <%
-
-	String content = URLDecoder.decode(request.getParameter("wd"),
-			"UTF-8");
+	String content = request.getParameter("wd");
 	if (content == null) {
 		content = "";
 	}
+	content = URLDecoder.decode(content, "UTF-8");
+	String pg = request.getParameter("page");//
+	int nowpage = 1;
+	if (pg == null) {
+		nowpage = 1;
+	}
+	try {
+		nowpage = Integer.parseInt(pg);
+	} catch (Exception e) {
+		nowpage = 1;
+	}
+	if (nowpage <= 0) {
+		nowpage = 1;
+	}
 	/*TODO:数据库读取具体内容之前先读取行数，然后进行分页操作
 	 */
-	 
-	 /*利用谷歌API来获取搜索结果用于测试*/
-	 String gapiurl = "https://www.googleapis.com/customsearch/v1?key=AIzaSyC6H3srhmy5nYxDLh9hdSOoqoVfCoK7vKE&cx=016107310399893718915:kqe8vf9-tza&q="
-	 + URLEncoder.encode(content, "UTF-8") +"&alt=json";
-	 Clustered fun = new Clustered();
 
-	 if(content != null && content != "")
-	 {
-	 	fun.putinlist(gapiurl);
-	 }
+	/*利用谷歌API来获取搜索结果用于测试*/
+	String gapiurl = "https://www.googleapis.com/customsearch/v1?key=AIzaSyC6H3srhmy5nYxDLh9hdSOoqoVfCoK7vKE&cx=016107310399893718915:kqe8vf9-tza&q="
+			+ URLEncoder.encode(content, "UTF-8")
+			+ "&alt=json"
+			+ "&start=" + ((nowpage - 1) * 10 + 1);
+	Clustered fun = new Clustered();
+
+	if (content != null && content != "") {
+		fun.putinlist(gapiurl);
+	}
 %>
 <!DOCTYPE html>
 <html>
@@ -68,75 +82,94 @@
 		tooltip.style.left = e.offsetLeft + 20;
 		tooltip.style.display = 'block';
 	}
+	function onPrev() {
+		content = encodeURI(encodeURI(
+<%=content%>
+	));
+		//document.getElementById("content").value = encodeURI(content);
+		window.location.href = "results.jsp?wd=" + content + "&page=" + (1);
+	}
+	function onNext() {
+		content = encodeURI(encodeURI(
+<%=content%>
+	));
+		//document.getElementById("content").value = encodeURI(content);
+		window.location.href = "results.jsp?wd=" + content + "&page=" + (1);
+	}
 </script>
 <link rel="stylesheet" type="text/css" media="all" href="css/style.css">
 <link rel="stylesheet" type="text/css" href="css/buttons.css" />
 </head>
 <body onload="new Accordian('outerres',5,'header_highlight');">
-	<div id=head>
-		<a href="/" class="s_logo" onmousedown="onBackHome()"><img
-			src="images/banner.png" width="100" height="38" border="0" alt="返回首页"
-			title="返回首页"> </a>
+	<div id=head style="padding-top:20px;padding-bottom:15px;">
+		<a href="index.jsp" class="s_logo" onmousedown="onBackHome()"
+			style="float:left;padding-right:20px"><img src="images/banner.png" width="100"
+			height="38" border="0" alt="返回首页" title="返回首页"> </a>
+
+		<div class="buttons">
+			<input type="text" maxlength="2048" size="41" id="content" name="wd"
+				value="<%=content%>"
+				style="font-size:16px;width:300px; height:25px"
+				onkeypress="if(event.keyCode==13||event.keyCode==108){onSearch();}" />
+			<button type="submit" class="positive" onclick=onSearch();>
+				<img src="images/apply2.png" alt="" /> Search
+			</button>
+		</div>
 	</div>
-	<div class="buttons">
-		<input type="text" maxlength="2048" size="41" id="content" name="wd"
-			value="<%=content%>" style="font-size:16px;width:300px; height:25px;"
-			onkeypress="if(event.keyCode==13||event.keyCode==108){onSearch();}" />
-		<button type="submit" class="positive" onclick=onSearch();>
-			<img src="images/apply2.png" alt="" /> Search
-		</button>
-	</div>
-	<div class="r">
+	<div class="r" style="padding-top:20px">
+		<%
+			if (content != null && content != "") {
+		%>
 		<ol id="outerres">
 			<%
- 			if(content != null && content != ""){
-			for(int i = 0;i < 5;i++){ 
-			Clusteredresult_Node node = fun.getlist().get(i).gethead(),nodep;
+				for (int i = 0; i < 5; i++) {
+						Clusteredresult_Node node = fun.getlist().get(i).gethead(), nodep;
 			%>
 			<li style="list-style-type: none;">
 				<div class="difres">
-					<a href="<%=node.geturl() %>" onmousedown=""
-						target="_blank"><%=node.gettitle()
-						%></a>
+					<a href="<%=node.geturl()%>" onmousedown="" target="_blank"><%=node.gettitle()%></a>
 					<div class="s">
 						<div>
 							<div class="url"
 								style="white-space:nowrap;color: rgb(0, 153, 51);">
-								<cite><%=node.geturl() %></cite>
+								<cite><%=node.geturl()%></cite>
 							</div>
 							<div class="cont"></div>
-							<span class="st" style="font-size: 13px;"><%=node.getabs() %></span>
+							<span class="st" style="font-size: 13px;"><%=node.getabs()%></span>
 						</div>
 					</div>
+					<!-- 
 					<button type="submit" onclick="showSameres(this,'sres<%=i%>')">相同结果</button>
-					<div id="sres<%=i %>" class="sres" style="display:none">
+					<div id="sres<%=i%>" class="sres" style="display:none">
 						<ul>
-						<% 	nodep = node.getnext();
-							while(nodep != null)
-							{
-						 %>
-							<li><a href="<%=nodep.geturl() %>"><%=nodep.gettitle()%></a></li>
-						<%
-							nodep = nodep.getnext();
-							} 
-						%>
+							<%nodep = node.getnext();
+					while (nodep != null) {%>
+							<li><a href="<%=nodep.geturl()%>"><%=nodep.gettitle()%></a>
+							</li>
+							<%nodep = nodep.getnext();
+					}%>
 						</ul>
 					</div>
+					 -->
 					<div id="basic-accordian">
 						<!--菜单开始-->
-						<div id="test<%=i %>-header" class="accordion_headings">相同结果</div>
-						<div id="test<%=i %>-content">
+						<div id="test<%=i%>-header" class="accordion_headings">相同结果</div>
+						<div id="test<%=i%>-content">
 							<div class="accordion_child">
 								<ul>
-						<% 	nodep = node.getnext();
-							while(nodep != null)
-							{
-						 %>
-							<li><a href="<%=nodep.geturl() %>"><%=nodep.gettitle()%></a></li>
-						<%
-							nodep = nodep.getnext();
-							} 
-						%>
+									<%
+										nodep = node.getnext();
+												while (nodep != null) {
+									%>
+									<li><a href="<%=nodep.geturl()%>"><%=nodep.gettitle()%></a>
+										<div class="url"
+											style="white-space:nowrap;color: rgb(0, 153, 51);">
+											<cite><%=nodep.geturl()%></cite>
+										</div></li>
+									<%
+										nodep = nodep.getnext();
+												}
+									%>
 								</ul>
 							</div>
 						</div>
@@ -145,9 +178,33 @@
 
 				</div>
 			</li>
-			<%} 
-			}%>
+			<%
+				}
+			%>
 		</ol>
+		<div class="bottom" style="color:blue; text-align:center">
+			<%
+				if (nowpage > 1) {
+						out.print("<a href=results.jsp?wd="
+								+ URLEncoder.encode(
+										URLEncoder.encode(content, "UTF-8"),
+										"UTF-8") + "&page=" + (nowpage - 1)
+								+ ">上一页</a>");
+					}
+			%>
+			<%
+				out.print("<a href=results.jsp?wd="
+							+ URLEncoder.encode(
+									URLEncoder.encode(content, "UTF-8"), "UTF-8")
+							+ "&page=" + (nowpage + 1) + ">下一页</a>");
+			%>
+			<!--  <a href="javascript:onPrev();" onclick="onPrev()">上一页</a> <a
+			href="javascript:onNext();" onclick="onNext()">下一页</a>
+			-->
+			<%
+				}
+			%>
+		</div>
 	</div>
 </body>
 </html>
