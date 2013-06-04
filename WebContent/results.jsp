@@ -1,11 +1,13 @@
-﻿<%@page import="clustered.Clusteredresult_Node"%>
-<%@page import="clustered.Clustered"%>
+﻿
 <%@page language="java" pageEncoding="UTF-8"
 	contentType="text/html; charset=UTF-8"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="clustered.*"%>
 <%@page import="java.net.URLEncoder"%>
 <%@page import="java.net.URLDecoder"%>
+<%@page import="clustered.*"%>
+
+
+
 <%-- 
     Document   : results
     Created on : 2013-4-21, 15:12:21
@@ -40,9 +42,6 @@
 			+ "&start=" + ((nowpage - 1) * 10 + 1);
 	Clustered fun = new Clustered();
 
-	if (content != null && content != "") {
-		fun.putinlist(gapiurl);
-	}
 %>
 <!DOCTYPE html>
 <html>
@@ -119,10 +118,12 @@
 	<div class="r" style="padding-top:20px">
 		<%
 			if (content != null && content != "") {
+				fun.process(content,nowpage);
 		%>
 		<ol id="outerres">
 			<%
-				for (int i = 0; i < 5; i++) {
+				int length = fun.getlist().size();
+				for (int i = 0; i < length; i++) {
 						Clusteredresult_Node node = fun.getlist().get(i).gethead(), nodep;
 			%>
 			<li style="list-style-type: none;">

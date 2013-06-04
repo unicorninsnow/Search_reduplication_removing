@@ -19,5 +19,6 @@
 			<attribute name="javadoc_location" value="file:/reference_jar/commons-httpclient-3.1/docs/apidocs/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.18-bin.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

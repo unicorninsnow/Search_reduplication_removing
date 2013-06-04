@@ -2,7 +2,11 @@
 
 import java.io.IOException;
 import java.util.ArrayList;
-
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 
 public class Clustered {
 
@@ -11,11 +15,55 @@ public class Clustered {
 	{
 		return list;
 	}
-	
-	public void putinlist(String url) throws IOException
+	public boolean getdb(String keyword,int showpage) throws SQLException, ClassNotFoundException
+	{
+		Class.forName("com.mysql.jdbc.Driver");	
+		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/searchdb", "search", "search");
+		Statement stmt = conn.createStatement();
+		String sql = "Select ID from KeywordTable where keyword = '" + keyword +"'";
+		ResultSet rs = stmt.executeQuery(sql);
+		sql = "Select * from ResultTable where showpage = " + 
+				showpage +" and keywordid in (Select ID from KeywordTable where keyword = '" + keyword +"')";
+		if(!rs.next())
+		{
+			return false;
+		}
+		rs = stmt.executeQuery(sql);
+		int n = 1;
+		Clusteredresult_Queue queue = new Clusteredresult_Queue();
+		if(rs.next())
+		{
+			do{
+				String linktitle = rs.getString("linktitle");
+				String linkurl = rs.getString("linkurl");
+				String linkabstract = rs.getString("linkabstract");
+				int resultnum = Integer.parseInt(rs.getString("resultnum"));
+				if(resultnum != n)
+				{
+					list.add(queue);
+					queue = new Clusteredresult_Queue();
+					n++;
+				}
+				queue.insert(linkurl, linktitle, linkabstract);
+			}while(rs.next());
+			if(queue.gethead() != null)//说明最后一个链表有内容
+			{
+				list.add(queue);
+			}
+			return true;
+		}else
+			return false;
+	}
+	public void process(String keyword,int showpage) throws SQLException, ClassNotFoundException
+	{
+		if(getdb(keyword, showpage))
+			return;
+		
+	}
+	public void putinlist(String keyword) throws IOException
 	{
 	 	String a; 
-		a = clustered.Getpage.getPage(url);
+		a = clustered.Getpage.getPage(keyword);
 	 	a = a.substring(a.indexOf("\"items\": ") + 1);
 	 	/*
 	 	File file = new File("C://temp.txt");
@@ -45,7 +93,10 @@ public class Clustered {
 			list.add(queue);
 		}
 	}
-	public void main(String[] args) throws IOException {
-		putinlist("a");
+	public void main(String[] args) throws IOException, SQLException, ClassNotFoundException {
+		if(getdb("a", 1))
+			System.out.println("yes");
+		else
+			System.out.println("no");
 	}
 }

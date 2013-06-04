@@ -3,6 +3,7 @@
 public class Clusteredresult_Queue
 {
 	Clusteredresult_Node head = null;	//数组中每个指针代表同类网页结果的链表头指针
+	Clusteredresult_Node tail = null;	//尾插法
 	//int length = 0;
 	public Clusteredresult_Node gethead()
 	{
@@ -14,12 +15,13 @@ public class Clusteredresult_Queue
 		Clusteredresult_Node e=new Clusteredresult_Node(Title,Url,Abs); 
 	    if(head == null) 
         { 
-	    	head = e;
+	    	head = tail = e;
         } 
 	    else 
 	    {
-	    	e.next = head;
-	    	head = e;
+	    	tail.next = e;
+	    	tail = e;
+	    	tail.next = null;
 	    } 
 	}
 }
