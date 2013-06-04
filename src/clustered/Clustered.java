@@ -71,7 +71,7 @@ public class Clustered {
 			return;
 		ArrayList<String> strlist = new ArrayList<String>();
 		Clusteredresult_Queue queue;
-		for(int i = (showpage-1) * 5 + 1;i <= showpage * 5;i++)
+		for(int i = (showpage-1) * 1 + 1;i <= showpage * 1;i++)
 		{
 			//先调用Search_word_process类处理输入
 			Search_word_process searchword = new Search_word_process();
@@ -94,10 +94,17 @@ public class Clustered {
 			for(int j = 0;j < 10;j++)
 			{
 				Result_Link_Struct res = result_links.get_link(j);
-				String title = res.getLink_title().toString();
-				String url = res.getLink_url().toString();
-				String abs = res.getLink_abstract().toString();
-				String text = res.getLink_text().toString();
+				String title = "",url = "",abs = "",text = null;
+				try{
+				title = res.getLink_title().toString();
+				url = res.getLink_url().toString();
+				abs = res.getLink_abstract().toString();
+				text = res.getLink_text().toString();
+				}catch(Exception e)
+				{
+					if(text == null)
+						text = "";
+				}
 				int size = strlist.size(),k;
 				for(k = 0;k < size;k++)
 				{

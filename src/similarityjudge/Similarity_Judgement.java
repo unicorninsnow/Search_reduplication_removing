@@ -27,9 +27,9 @@ public class Similarity_Judgement
 				list.add(substrs[count]);
 			count ++;
 		}
-
+		/*
 		for (Iterator i = list.iterator(); i.hasNext();) 
-			System.out.println(i.next());
+			System.out.println(i.next());*/
 	}
 	
 	/* 相似度判断 */
@@ -45,10 +45,10 @@ public class Similarity_Judgement
 			if  (list1.contains(str)) same ++;
 		}
 		double ratio = (double)same / all1; 
-		System.out.println(same);
+		/*System.out.println(same);
 		System.out.println(all1);
 		System.out.println(all2);
-		System.out.println(ratio);
+		System.out.println(ratio);*/
 		if (ratio > JUDGE_RATIO) return true;
 		else return false;
 	}
@@ -76,6 +76,6 @@ public class Similarity_Judgement
 		//String str2 = strfromfile("D:\\test folder\\clustertest2.txt");
 		String str2 = strfromfile("D:\\test folder\\clustertest3.txt");
 		Boolean is_similar = similarity_judge(str1, str2);
-		System.out.println(is_similar);
+		/*System.out.println(is_similar);*/
 	}
 }
