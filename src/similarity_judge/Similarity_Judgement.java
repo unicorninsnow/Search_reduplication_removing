@@ -147,14 +147,14 @@ public class Similarity_Judgement
 	
 	public static void main(String[] args) throws Exception
 	{
-		String str1 = strfromfile("D:\\test folder\\clustertest1.txt");
-		String str2 = strfromfile("D:\\test folder\\clustertest2.txt");
-		String str3 = strfromfile("D:\\test folder\\clustertest3.txt");
-		String str4 = strfromfile("D:\\test folder\\clustertest4.txt");
+		String str1 = strfromfile("test folder\\clustertest1.txt");
+		String str2 = strfromfile("test folder\\clustertest2.txt");
+		String str3 = strfromfile("test folder\\clustertest3.txt");
+		String str4 = strfromfile("test folder\\clustertest4.txt");
 		//Boolean is_similar = similarity_judge(str1, str2);
 		//Boolean is_similar = similarity_judge(str1, str3);
-		Boolean is_similar1 = similarity_judge(str1, str2, 2);
-		Boolean is_similar2 = similarity_judge(str1, str4, 2);
+		Boolean is_similar1 = similarity_judge(str1, str2, 1);
+		Boolean is_similar2 = similarity_judge(str1, str4, 1);
 		System.out.println(is_similar1);
 		System.out.println(is_similar2);	
 	}
