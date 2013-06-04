@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.htmlparser.util.*;
 
@@ -26,7 +27,7 @@ public class Clustered {
 	{
 		return list;
 	}
-	public boolean getdb(String keyword,int showpage) throws SQLException, ClassNotFoundException
+	public int getdb(String keyword,int showpage) throws SQLException, ClassNotFoundException
 	{
 		Class.forName("com.mysql.jdbc.Driver");	
 		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/searchdb", "search", "search");
@@ -37,7 +38,7 @@ public class Clustered {
 				showpage +" and keywordid in (Select ID from KeywordTable where keyword = '" + keyword +"')";
 		if(!rs.next())
 		{
-			return false;
+			return 1;//没有找到关键字
 		}
 		rs = stmt.executeQuery(sql);
 		int n = 1;
@@ -61,13 +62,14 @@ public class Clustered {
 			{
 				list.add(queue);
 			}
-			return true;
+			return 2;//找到并从注册表中提取
 		}else
-			return false;
+			return 3;//有关键字但没有这页
 	}
 	public void process(String keyword,int showpage) throws SQLException, ClassNotFoundException, ParserException, UnsupportedEncodingException
 	{
-		if(getdb(keyword, showpage))
+		int flag = getdb(keyword, showpage);
+		if(flag == 2)
 			return;
 		ArrayList<String> strlist = new ArrayList<String>();
 		Clusteredresult_Queue queue;
@@ -121,8 +123,35 @@ public class Clustered {
 					list.get(k).insert(url, title, abs);
 				}
 			}
-			
 		}
+		int size = list.size();
+		Class.forName("com.mysql.jdbc.Driver");	
+		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/searchdb", "search", "search");
+		Statement stmt = conn.createStatement();
+		String sql;
+		if(flag == 1)//需要在表中添加关键字再添加项
+		{
+			sql = "Insert into KeywordTable(keyword) values('" + keyword + "')";
+			stmt.executeUpdate(sql);
+		}
+		sql = "Select ID from KeywordTable where keyword = '" + keyword +"'";
+		ResultSet rs = stmt.executeQuery(sql);
+		rs.next();
+		int keywordid = Integer.parseInt(rs.getString("ID"));
+		for(int k = 0;k < size;k++)
+		{
+			queue = list.get(k);
+			Clusteredresult_Node p = queue.head;
+			while(p.next != null)
+			{
+			sql = "Insert into ResultTable(keywordid,linktitle,linkurl,linkabstract.showpage,resultnum) values(" + keywordid +
+					",'" + p.gettitle() +"','" + p.geturl() +"','" + p.getabs() +"'," + showpage + "," + k + ")";
+			stmt.executeUpdate(sql);
+			p = p.next;
+			}
+		}
+		
+		
 	}/*
 	public void putinlist(String keyword) throws IOException//测试用的谷歌api
 	{
