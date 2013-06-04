@@ -7,11 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.htmlparser.util.*;
 
-import similarityjudge.Similarity_Judgement;
+import similarity_judge.Similarity_Judgement;
 
 
 import crawl.Pages_analysis;
@@ -41,7 +40,7 @@ public class Clustered {
 			return 1;//没有找到关键字
 		}
 		rs = stmt.executeQuery(sql);
-		int n = 1;
+		int n = 0;
 		Clusteredresult_Queue queue = new Clusteredresult_Queue();
 		if(rs.next())
 		{
@@ -66,13 +65,15 @@ public class Clustered {
 		}else
 			return 3;//有关键字但没有这页
 	}
-	public void process(String keyword,int showpage) throws SQLException, ClassNotFoundException, ParserException, UnsupportedEncodingException
+	public void process(String keyword,int showpage) throws SQLException, ClassNotFoundException, ParserException, IOException
 	{
 		int flag = getdb(keyword, showpage);
 		if(flag == 2)
 			return;
 		ArrayList<String> strlist = new ArrayList<String>();
 		Clusteredresult_Queue queue;
+		Similarity_Judgement sj = new Similarity_Judgement();
+		
 		for(int i = (showpage-1) * 1 + 1;i <= showpage * 1;i++)
 		{
 			//先调用Search_word_process类处理输入
@@ -93,6 +94,8 @@ public class Clustered {
 			Pages_analysis pages_analysis = new Pages_analysis();
 			pages_analysis.analyze_pages(result_links);
 			
+			
+			
 			for(int j = 0;j < 10;j++)
 			{
 				Result_Link_Struct res = result_links.get_link(j);
@@ -110,7 +113,7 @@ public class Clustered {
 				int size = strlist.size(),k;
 				for(k = 0;k < size;k++)
 				{
-					if(Similarity_Judgement.similarity_judge(text,strlist.get(k)))
+					if(sj.similarity_judge(text,strlist.get(k),1))
 						break;
 				}
 				if(k == size)//没有近似的
@@ -128,6 +131,7 @@ public class Clustered {
 		Class.forName("com.mysql.jdbc.Driver");	
 		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/searchdb", "search", "search");
 		Statement stmt = conn.createStatement();
+
 		String sql;
 		if(flag == 1)//需要在表中添加关键字再添加项
 		{
@@ -142,9 +146,9 @@ public class Clustered {
 		{
 			queue = list.get(k);
 			Clusteredresult_Node p = queue.head;
-			while(p.next != null)
+			while(p != null)
 			{
-			sql = "Insert into ResultTable(keywordid,linktitle,linkurl,linkabstract.showpage,resultnum) values(" + keywordid +
+			sql = "Insert into ResultTable(keywordid,linktitle,linkurl,linkabstract,showpage,resultnum) values(" + keywordid +
 					",'" + p.gettitle() +"','" + p.geturl() +"','" + p.getabs() +"'," + showpage + "," + k + ")";
 			stmt.executeUpdate(sql);
 			p = p.next;

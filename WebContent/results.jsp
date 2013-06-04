@@ -152,6 +152,9 @@
 						</ul>
 					</div>
 					 -->
+					 <% nodep = node.getnext();
+							if(nodep != null){
+						 %>
 					<div id="basic-accordian">
 						<!--菜单开始-->
 						<div id="test<%=i%>-header" class="accordion_headings">相同结果</div>
@@ -159,7 +162,6 @@
 							<div class="accordion_child">
 								<ul>
 									<%
-										nodep = node.getnext();
 												while (nodep != null) {
 									%>
 									<li><a href="<%=nodep.geturl()%>"><%=nodep.gettitle()%></a>
@@ -176,9 +178,10 @@
 						</div>
 					</div>
 					<!--菜单结束-->
-
 				</div>
+				<% } %>
 			</li>
+			<br/>
 			<%
 				}
 			%>
