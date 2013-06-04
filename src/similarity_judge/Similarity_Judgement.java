@@ -17,7 +17,7 @@ public class Similarity_Judgement
 	private  List<String> list1 = new ArrayList<String>();	
 	private  List<String> list2 = new ArrayList<String>();	//存储两篇文章分句的结果list
 	private  int SENTENCE_MINLEN = 5;		//作为句子存储的最小长度
-	private  double JUDGE_RATIO = 0.8;	//判断相似的阈值
+	private  double JUDGE_RATIO = 0.45;	//判断相似的阈值
 	private  int MAX_HAMMING_DIS = 2;	//文本相似的hamming距离
 	/* 分割以String保存的正文 */
 	public  void article_divide(String str,	List<String> list)
@@ -44,6 +44,8 @@ public class Similarity_Judgement
 		boolean is_similar = false;
 		if (algo_choice == 1)	//选择最简单的判重算法 
 		{
+			list1.removeAll(list1);
+			list2.removeAll(list2);
 			article_divide(article1, list1);
 			article_divide(article2, list2);
 			int all1= list1.size(), all2 = list2.size(), same = 0;
