@@ -25,8 +25,8 @@ public class Search_engine_process {
 			
 			parser.setEncoding("utf-8");
 
-			parser.getConnectionManager().setProxyHost("127.0.0.1");
-			parser.getConnectionManager().setProxyPort(8118);
+			Parser.getConnectionManager().setProxyHost("127.0.0.1");
+			Parser.getConnectionManager().setProxyPort(8118);
 			
 			parser.setURL(url);
 			
@@ -38,7 +38,7 @@ public class Search_engine_process {
 				OrFilter result_filter = new OrFilter(result_filter_regu,result_filter_op);
 				NodeFilter linkclass_t = new HasAttributeFilter("class","t");
 				NodeFilter result_child_filter = new HasParentFilter(result_filter, true);
-				AndFilter result_link_filter = new AndFilter(linkclass_t,result_child_filter);
+				new AndFilter(linkclass_t,result_child_filter);
 
 				NodeList nodes = parser.extractAllNodesThatMatch(linkclass_t);
 				// NodeList nodes =
@@ -48,7 +48,7 @@ public class Search_engine_process {
 				if (nodes != null) {
 					for (int i = 0; i < nodes.size(); ++i) {
 						// 逐个取出符合条件的链接结点
-						Node textnode = (Node) nodes.elementAt(i);
+						Node textnode = nodes.elementAt(i);
 
 						// 在链接结点中取得实际有效的链接结点
 						Node effective_tag = textnode.getFirstChild();
@@ -99,14 +99,14 @@ public class Search_engine_process {
 				*/
 				NodeList google_nodes_link = parser
 						.extractAllNodesThatMatch(linkclass_r);
-				NodeList google_nodes_describe = parser.extractAllNodesThatMatch(linkclass_st);
+				parser.extractAllNodesThatMatch(linkclass_st);
 
 				//System.out.println("it's test_google");
 				if (google_nodes_link != null) {
 					System.out.println("have" + google_nodes_link.size());
 					for (int i = 0; i < google_nodes_link.size(); ++i) {
 						// 逐个取出符合条件的链接结点
-						Node textnode = (Node) google_nodes_link.elementAt(i);
+						Node textnode = google_nodes_link.elementAt(i);
 
 						// 在链接结点中取得实际有效的链接结点
 						Node effective_tag = textnode.getFirstChild();

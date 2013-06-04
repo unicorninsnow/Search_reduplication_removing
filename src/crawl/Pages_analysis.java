@@ -1,15 +1,10 @@
 package crawl;
 
 
-import java.util.Set;
-
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
-import org.htmlparser.filters.HasAttributeFilter;
-import org.htmlparser.filters.OrFilter;
 import org.htmlparser.filters.TagNameFilter;
-import org.htmlparser.util.EncodingChangeException;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 
@@ -92,7 +87,7 @@ public class Pages_analysis {
 			if (main_body != null) {
 				//System.out.println("main_body.size ===== " + main_body.size());
 				for (int i = 0; i < main_body.size(); ++i) {
-					Node mainbody_text = (Node) main_body.elementAt(i);
+					Node mainbody_text = main_body.elementAt(i);
 					String temptext = mainbody_text.toPlainTextString().replace("&ldquo;","“").replace("&rdquo;","”").replace("&middot;","·").replace("&nbsp", " ").replace(" ","").replace("	", "");
 					if(temptext.length()> text_para_threshold){
 						mainbody_analyzed = mainbody_analyzed + temptext + "\n"; 

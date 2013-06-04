@@ -3,33 +3,26 @@ package crawl;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.util.Set;
 import java.util.TreeSet;
 
 import org.htmlparser.util.ParserException;
-
-import datapackage.Link_queue;
-import crawl.Search_engine_process;
 
 public class Search_word_process {
 	private char search_mode = 'B';//默认以百度作为搜索引擎
 	private String search_word;
 	private String search_url = "";
 	private int Noofpagetoaccess = 1;
-	private boolean is_legal = true;
-	
-	
 	//public void putin(char search_mode, String search_word) {
 	public void putin(char mode,String word,int numofpage) {
 		search_mode = mode; 
 		//System.out.println("请输入搜索引擎代码（百度B，谷歌G）")
 		//(char)System.in.read();
-		if (((int) search_mode >= 97) && ((int) search_mode <= 122))
+		if ((search_mode >= 97) && (search_mode <= 122))
 			search_mode -= 32;
 		// System.out.println(search_mode);
 
 		search_word = word;
-		BufferedReader search_word_reader = new BufferedReader(
+		new BufferedReader(
 				new InputStreamReader(System.in));
 		//System.out.println("请输入搜索关键词");
 		//search_word_reader.readLine();
@@ -42,7 +35,7 @@ public class Search_word_process {
 	}
 
 	public void choose_engine_search_word() throws UnsupportedEncodingException{
-		Set<String> result_links = new TreeSet<String>();
+		new TreeSet<String>();
 		do {
 			//System.out.println(search_word);
 			try {
@@ -75,9 +68,8 @@ public class Search_word_process {
 			} catch (Exception illegal_Search_mode) {
 				illegal_Search_mode.printStackTrace();
 				System.out.println("illegal Search mode");
-				is_legal = false;
 			};
-		} while (is_legal = false);
+		} while (false);
 		
 		return;
 	}

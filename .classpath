@@ -20,5 +20,13 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.18-bin.jar"/>
+	<classpathentry kind="lib" path="F:/Program Files (x86)/Android/android-sdk/platforms/android-17/android.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/F:/Program Files (x86)/Android/android-sdk/docs/reference"/>
+		</attributes>
+		<accessrules>
+			<accessrule kind="nonaccessible" pattern="com/android/internal/**"/>
+		</accessrules>
+	</classpathentry>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
