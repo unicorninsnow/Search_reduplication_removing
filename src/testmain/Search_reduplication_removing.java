@@ -56,7 +56,7 @@ public class Search_reduplication_removing {
 		//HtmlParserTool htmlparsertool = testtest.new HtmlParserTool();
 		
 		Search_word_process searchword = new Search_word_process();
-		searchword.putin();
+		searchword.putin('B',"新时代的机器学习",2);
 		searchword.choose_engine_search_word();
 		searchword.access_to_appointed_page();
 		

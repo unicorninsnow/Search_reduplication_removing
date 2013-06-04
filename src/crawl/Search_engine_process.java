@@ -46,7 +46,7 @@ public class Search_engine_process {
 				// NodeList nodes =
 				// parser.extractAllNodesThatMatch(result_filter);
 
-				System.out.println("it's test_baidu");
+				//System.out.println("it's test_baidu");
 				if (nodes != null) {
 					for (int i = 0; i < nodes.size(); ++i) {
 						// 逐个取出符合条件的链接结点
@@ -107,7 +107,7 @@ public class Search_engine_process {
 						.extractAllNodesThatMatch(linkclass_r);
 				NodeList google_nodes_describe = parser.extractAllNodesThatMatch(linkclass_st);
 
-				System.out.println("it's test_google");
+				//System.out.println("it's test_google");
 				if (google_nodes_link != null) {
 					System.out.println("have" + google_nodes_link.size());
 					for (int i = 0; i < google_nodes_link.size(); ++i) {

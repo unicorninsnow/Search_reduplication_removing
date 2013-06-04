@@ -20,15 +20,15 @@ public class Search_word_process {
 	
 	
 	//public void putin(char search_mode, String search_word) {
-	public void putin() {
-		search_mode = 'B'; 
+	public void putin(char mode,String word,int numofpage) {
+		search_mode = mode; 
 		//System.out.println("请输入搜索引擎代码（百度B，谷歌G）")
 		//(char)System.in.read();
 		if (((int) search_mode >= 97) && ((int) search_mode <= 122))
 			search_mode -= 32;
 		// System.out.println(search_mode);
 
-		search_word = "新时代的机器学习";
+		search_word = word;
 		BufferedReader search_word_reader = new BufferedReader(
 				new InputStreamReader(System.in));
 		//System.out.println("请输入搜索关键词");
@@ -36,7 +36,7 @@ public class Search_word_process {
 		assert(!(search_word.equals("")));
 		if((search_word.equals(""))){System.out.println("空搜索关键词");return;}
 		
-		Noofpagetoaccess = 2;
+		Noofpagetoaccess = numofpage;
 		assert(Noofpagetoaccess > 0);
 		return;
 	}
@@ -46,8 +46,8 @@ public class Search_word_process {
 		//putin(search_mode, search_word);
 		Set<String> result_links = new TreeSet<String>();
 		do {
-			putin();
-			System.out.println(search_word);
+			//putin();
+			//System.out.println(search_word);
 			try {
 				if(search_word == "") throw new Exception();
 				switch (search_mode) {
@@ -65,7 +65,7 @@ public class Search_word_process {
 					search_url = "http://www.google.com.hk/search?q="
 							+ java.net.URLEncoder.encode(search_word,
 									"utf-8");
-					System.out.println(search_url);
+					//System.out.println(search_url);
 					// downLoader.downloadFile(search_url,"google下载网页_" +
 					// search_word + ".html");
 					break;
@@ -92,13 +92,13 @@ public class Search_word_process {
 		case 'B':
 			// 百度
 			search_url = search_url + "&pn=" + (Noofpagetoaccess-1) + "0";
-			System.out.println(search_url);
+			//System.out.println(search_url);
 			//Search_engine_process.extractLinks(search_url, search_mode);
 			break;
 		case 'G':
 			// google
 			search_url = search_url + "&start=" + (Noofpagetoaccess-1) + "0";
-			System.out.println(search_url);
+			//System.out.println(search_url);
 			//Search_engine_process.extractLinks(search_url, search_mode);
 			break;
 		default:
