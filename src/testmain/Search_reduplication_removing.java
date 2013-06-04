@@ -65,10 +65,11 @@ public class Search_reduplication_removing {
 		
 		
 		Link_queue result_links = search_engine_process.getresult_links();
-		//result_links.output_all_links();
 		
 		Pages_analysis pages_analysis = new Pages_analysis();
 		pages_analysis.analyze_pages(result_links);
+		
+		result_links.output_all_links();
 		
 		return ;
 	}

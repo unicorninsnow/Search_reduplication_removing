@@ -7,6 +7,7 @@ import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
 import org.htmlparser.filters.HasAttributeFilter;
+import org.htmlparser.filters.OrFilter;
 import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.util.EncodingChangeException;
 import org.htmlparser.util.NodeList;
@@ -23,7 +24,7 @@ public class Pages_analysis {
 	public void analyze_pages(Link_queue result_links){
 		for(int i = 0;i < result_links.num_of_links();++i){
 			//get_page_title(result_links.get_link(i));
-			get_page_mainbody(result_links.get_link(0));
+			get_page_mainbody(result_links.get_link(i));
 		}
 		
 		return;
@@ -78,35 +79,35 @@ public class Pages_analysis {
 
 	public void get_page_mainbody(Result_Link_Struct page_to_analyze) {
 		String mainbody_analyzed = "";
-		System.out.println(page_to_analyze.getLink_title());
-		System.out.println(page_to_analyze.getLink_url());
+		//System.out.println(page_to_analyze.getLink_title());
+		//System.out.println(page_to_analyze.getLink_url());
 		try {
 			Parser parser = new Parser(page_to_analyze.getLink_url());
-			//NodeFilter mainbody_filter = new HasAttributeFilter("id","articleContent");
 			NodeFilter mainbody_filter = new TagNameFilter("p");
+			//NodeFilter mainbody_filter_p = new TagNameFilter("p");
+			//NodeFilter mainbody_filter_article = new HasAttributeFilter("class", "article");
+			//NodeFilter mainbody_filter = new OrFilter(mainbody_filter_p,mainbody_filter_article);
 			NodeList main_body = parser.extractAllNodesThatMatch(mainbody_filter);
 
 			if (main_body != null) {
-				System.out.println("main_body.size ===== "
-						+ main_body.size());
+				//System.out.println("main_body.size ===== " + main_body.size());
 				for (int i = 0; i < main_body.size(); ++i) {
 					Node mainbody_text = (Node) main_body.elementAt(i);
-					String temptext = mainbody_text.toPlainTextString().replace("&ldquo;","“").replace("&rdquo;","”").replace("&nbsp", " ").replace(" ","").replace("	", "");
+					String temptext = mainbody_text.toPlainTextString().replace("&ldquo;","“").replace("&rdquo;","”").replace("&middot;","·").replace("&nbsp", " ").replace(" ","").replace("	", "");
 					if(temptext.length()> text_para_threshold){
 						mainbody_analyzed = mainbody_analyzed + temptext + "\n"; 
 						//System.out.println(temptext);
 					}
 					//System.out.println(temptext);
-					
 					//System.out.println("=================heihei=============");
 				}
-				System.out.println(mainbody_analyzed);
-				System.out.println("=================one page is finished.==================");
-				// else{
-				// System.out.println("why is title not exclusive?");
-				// }
+				//System.out.println(mainbody_analyzed);
+				//System.out.println("=================one page is finished.==================");
+				page_to_analyze.setLink_text(mainbody_analyzed);
 			}
-
+			else{
+				System.out.println("why is title not exclusive?");
+			}
 		} catch (ParserException e) {
 			e.printStackTrace();
 		}
