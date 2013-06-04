@@ -1,0 +1,321 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+<html>
+  <head>
+    <title>HTML Parser - 
+    HTML Parser Sample Programs</title>
+    <style type="text/css" media="all">
+      @import url("./css/maven-base.css");
+      @import url("./css/maven-theme.css");
+      @import url("./css/site.css");
+    </style>
+    <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
+          <meta name="author" content="
+    Derrick Oswald" />
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+      </head>
+  <body class="composite">
+    <div id="banner">
+                    <span id="bannerLeft">
+    
+                                            <img src="images/htmlparserlogo.jpg" alt="" />
+    
+            </span>
+                        <a href="http://sourceforge.net/projects/htmlparser" id="bannerRight">
+    
+                                    <img src="http://sourceforge.net/sflogo.php?group_id=24399&type=1" alt="" />
+    
+            </a>
+            <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="breadcrumbs">
+          
+  
+
+  
+    
+  
+  
+            <div class="xleft">
+        Last Published: 09/23/2006
+                      </div>
+            <div class="xright">      <a href="http://sourceforge.org/projects/htmlparser">Project Page</a>
+          
+  
+
+  
+    
+  
+  
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="leftColumn">
+      <div id="navcolumn">
+           
+  
+
+  
+    
+  
+  
+                   <h5>Project Documentation</h5>
+        <ul>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+              <a href="project-info.html">Project Information</a>
+              </li>
+          </ul>
+          <h5>Downloads</h5>
+        <ul>
+              
+    <li class="none">
+              <a href="http://sourceforge.net/project/showfiles.php?group_id=24399">Current</a>
+        </li>
+              
+    <li class="none">
+              <a href="http://sourceforge.net/project/showfiles.php?group_id=24399&package_id=17243">Older</a>
+        </li>
+              
+    <li class="none">
+              <a href="http://svn.sourceforge.net/viewcvs.cgi/htmlparser/">Subversion</a>
+        </li>
+              
+    <li class="none">
+              <a href="http://htmlparser.cvs.sourceforge.net/htmlparser/">Legacy CVS</a>
+        </li>
+          </ul>
+          <h5>Documentation</h5>
+        <ul>
+              
+    <li class="none">
+              <a href="http://htmlparser.sourceforge.net">Home Page</a>
+        </li>
+              
+    <li class="none">
+              <a href="http://sourceforge.org/projects/htmlparser">Project Page</a>
+        </li>
+              
+    <li class="none">
+              <a href="faq.html">FAQ</a>
+        </li>
+              
+    <li class="none">
+              <a href="todo.html">ToDo</a>
+        </li>
+              
+    <li class="none">
+              <a href="javadoc/index.html">JavaDocs</a>
+        </li>
+              
+    <li class="none">
+              <strong>Samples</strong>
+        </li>
+              
+    <li class="none">
+              <a href="http://htmlparser.sourceforge.net/old/">Old Web Page</a>
+        </li>
+          </ul>
+          <h5>Support</h5>
+        <ul>
+              
+    <li class="none">
+              <a href="mailinglists.html">Mailing Lists</a>
+        </li>
+              
+    <li class="none">
+              <a href="bug.html">Report Bugs</a>
+        </li>
+              
+    <li class="none">
+              <a href="support.html">Request Support</a>
+        </li>
+              
+    <li class="none">
+              <a href="joinus.html">Join Us</a>
+        </li>
+          </ul>
+                                       <a href="http://maven.apache.org/" title="Built by Maven" id="poweredBy">
+            <img alt="Built by Maven" src="./images/logos/maven-feather.png"></img>
+          </a>
+                       
+  
+
+  
+    
+  
+  
+        </div>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        
+  
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"></meta>
+    <meta name="KeyWords" content="sample programs,htmlparser,java"></meta>
+    <link rel="stylesheet" type="text/css" href="javadoc/stylesheet.css" title="Style"></link>
+  </head>
+  
+    <a name="Sample Programs"></a><div class="section"><h2>Sample Programs</h2>
+  <p></p>The example programs included with the HTML Parser distribution are listed
+    below, with some details.
+  <p></p><strong>Note:</strong> On unix systems if you used the Java jar command or
+    some older unzip utility to extract the distribution zip file, the
+    executable flag will not have been preserved on the files in the bin
+    directory. You can fix this by issuing the following command:
+    <pre>
+    <code>chmod u+x bin/*</code>
+    </pre>
+<p></p>
+<table class="bodyTable">
+  <tr class="a"> 
+    <td>
+    <strong>Parser</strong><br></br>
+    </td>
+    <td>
+    <i>Parse a web page and print the tags in a simple loop.</i><br></br>
+    <a href="javadoc/org/htmlparser/Parser.html#main(java.lang.String[])">org.htmlparser.Parser.main(String[] args)</a>
+    <pre>
+    <code>bin/parser http://website_url [tag_name]</code>
+    where tag_name is an optional tag name to be used as a filter, i.e.
+        A - Show only the link tags extracted from the document
+        IMG - Show only the image tags extracted from the document
+        TITLE - Extract the title from the document
+    NOTE: this is also the default program for the htmlparser.jar, so the above could be:
+    <code>java -jar lib/htmlparser.jar http://website_url [tag_name]</code>
+    </pre>
+    </td>
+  </tr>
+  <tr class="b"> 
+    <td>
+    <strong>Lexer</strong><br></br>
+    </td>
+    <td>
+    <i>Print the low level nodes of a web page.</i><br></br>
+    <a href="javadoc/org/htmlparser/lexer/Lexer.html">org.htmlparser.lexer.Lexer</a>
+    <pre>
+    <code>bin/lexer http://website_url</code>
+    </pre>
+    </td>
+  </tr>
+  <tr class="a"> 
+    <td>
+    <strong>Filter Builder</strong><br></br>
+    </td>
+    <td>
+    <i>Interactively generate source code to extract web site contents.</i><br></br>
+    <a href="javadoc/org/htmlparser/parserapplications/filterbuilder/FilterBuilder.html">org.htmlparser.parserapplications.filterbuilder.FilterBuilder</a>
+    <pre>
+    <code>bin/filterbuilder</code>
+    </pre>
+    Execute the FilterBuilder application online using Java Web Start:<br></br>
+    <a href="samples/filterbuilder.jnlp">org.htmlparser.parserapplications.filterbuilder.FilterBuilder</a>
+    </td>
+  </tr>
+  <tr class="b"> 
+    <td>
+    <strong>Site Capturer</strong><br></br>
+    </td>
+    <td>
+    <i>Save a web site locally.</i><br></br>
+    <a href="javadoc/org/htmlparser/parserapplications/SiteCapturer.html">org.htmlparser.parserapplications.SiteCapturer</a>
+    <pre>
+    <code>bin/sitecapturer http://source_website /target_directory/ [true|false]</code>
+    the optional boolean argument determines whether resources such as images,
+    audio and video are to be captured
+    </pre>
+    Execute the SiteCapturer application online using Java Web Start:<br></br>
+    <a href="samples/sitecapturer.jnlp">org.htmlparser.parserapplications.SiteCapturer</a>
+    </td>
+  </tr>
+  <tr class="a"> 
+    <td>
+    <strong>Thumbelina</strong><br></br>
+    </td>
+    <td>
+    <i>View images behind thumbnails.</i><br></br>
+    <a href="javadoc/org/htmlparser/lexerapplications/thumbelina/package-summary.html">org.htmlparser.lexerapplications.thumbelina.Thumbelina</a>
+    <pre>
+    <code>bin/thumbelina [http://starting_website]</code>
+    </pre>
+    Execute the Thumbelina application online using Java Web Start:<br></br>
+    <a href="samples/thumbelina.jnlp">org.htmlparser.lexerapplications.thumbelina.Thumbelina</a>
+    </td>
+  </tr>
+  <tr class="b"> 
+    <td>
+    <strong>BeanyBaby</strong><br></br>
+    </td>
+    <td>
+    <i>Parser Java Bean demo.</i><br></br>
+    <a href="javadoc/org/htmlparser/beans/BeanyBaby.html">org.htmlparser.beans.BeanyBaby</a>
+    <pre>
+    <code>bin/beanybaby [http://starting_website]</code>
+    </pre>
+    </td>
+  </tr>
+  <tr class="a"> 
+    <td>
+    <strong>Translate</strong><br></br>
+    </td>
+    <td>
+    <i>Numeric character reference and character entity reference to unicode codec.</i><br></br>
+    <a href="javadoc/org/htmlparser/util/Translate.html">org.htmlparser.util.Translate</a>
+    <pre>
+    <code>bin/translate [-encode] &lt;input_file &gt;output_file</code>
+    </pre>
+    </td>
+  </tr>
+</table>
+    </div>
+  
+
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2001-2006
+    
+          
+  
+
+  
+    
+  
+  
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>
