@@ -43,12 +43,36 @@ import org.htmlparser.filters.*;
 import org.htmlparser.util.*;
 import org.htmlparser.tags.LinkTag;
 
+import crawl.Pages_analysis;
 import crawl.Search_engine_process;
 import crawl.Search_word_process;
 import datapackage.Link_queue;
 
 public class Search_reduplication_removing {
 
+	public static void main(String[] args) throws HttpException, IOException, ParserException {
+		Search_reduplication_removing testtest = new Search_reduplication_removing();
+		DownLoadFile downLoader=testtest.new DownLoadFile(); 
+		//HtmlParserTool htmlparsertool = testtest.new HtmlParserTool();
+		
+		Search_word_process searchword = new Search_word_process();
+		searchword.putin();
+		searchword.choose_engine_search_word();
+		searchword.access_to_appointed_page();
+		
+		Search_engine_process search_engine_process = new Search_engine_process();
+		search_engine_process.extractLinks(searchword.getsearch_url(), searchword.getsearch_mode(), searchword.getNoofpagetoaccess());
+		
+		
+		Link_queue result_links = search_engine_process.getresult_links();
+		//result_links.output_all_links();
+		
+		Pages_analysis pages_analysis = new Pages_analysis();
+		pages_analysis.analyze_pages(result_links);
+		
+		return ;
+	}
+	
 	
 	public class DownLoadFile{
 		/**
@@ -133,83 +157,9 @@ public class Search_reduplication_removing {
 		}
 	}
 
+
 	public interface LinkFilter {
 		public boolean accept(String url);
 	}
 
-
-	public static void main(String[] args) throws HttpException, IOException, ParserException {
-		Search_reduplication_removing testtest = new Search_reduplication_removing();
-		DownLoadFile downLoader=testtest.new DownLoadFile(); 
-		//HtmlParserTool htmlparsertool = testtest.new HtmlParserTool();
-		
-		Search_word_process searchword = new Search_word_process();
-		searchword.putin();
-		searchword.choose_engine_search_word();
-		searchword.access_to_appointed_page();
-		
-		Search_engine_process search_engine_process = new Search_engine_process();
-		search_engine_process.extractLinks(searchword.getsearch_url(), searchword.getsearch_mode(), searchword.getNoofpagetoaccess());
-		
-		
-		Link_queue result_links = search_engine_process.getresult_links();
-		result_links.output_all_links();
-		
-		/*Set<String> search_result_links = htmlparsertool.choose_engine_search_word();
-		
-		System.out.println("468416358413641364163413");
-		System.out.println(search_result_links);
-		System.out.println("468416358413641364163413");
-		
-		
-		Pages_analysis page_analysis = testtest.new Pages_analysis();
-		page_analysis.analyze_pages(search_result_links);
-		*/
-		//page_analysis.get_page_mainbody("http://blog.sina.com.cn/s/blog_4caedc7a0102drdo.html");
-		//page_analysis.get_page_title("http://news.cnblogs.com/n/110434/");
-		
-		
-		
-		
-		/*
-		HttpClient httpclient = new HttpClient();
-		//URLEncoder.encode(src);
-		GetMethod getMethod = new GetMethod("http://www.baidu.com/s?wd=C99%D0%C2%CC%D8%D0%D4&rsv_bp=0&rsv_spt=3&rsv_sug3=4&rsv_sug=0&rsv_sug1=4&rsv_sug4=222&inputT=10056");
-		//
-		//("http://www.baidu.com");
-		//getMethod.addRequestHeader("Content-type" , "text/html; charset=utf-8");
-		//httpclient.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
-		int statusCode = httpclient.executeMethod(getMethod);
-		OutputStream output = new FileOutputStream("test_baidu_115.htm");
-		//PrintStream   old   =   System.out;
-		PrintStream myOut = new PrintStream(output);
-		System.out.println(statusCode);
-		System.setOut(myOut);
-		//String response = getMethod.getResponseBodyAsString();
-		
-		InputStream resStream = getMethod.getResponseBodyAsStream();  
-        BufferedReader br = new BufferedReader(new InputStreamReader(resStream));  //,"utf-8"
-        StringBuffer resBuffer = new StringBuffer();  
-        */
-        /*
-        String resTemp = "";
-        while((resTemp =  br.readLine()) != null){  
-            resBuffer.append(resTemp);
-            resBuffer.append("\n");
-        	System.out.println(resTemp);
-        }  
-        */
-		/*
-        int resTemp = -1;
-        while((resTemp =  br.read()) != -1){  
-            resBuffer.append((char)resTemp);
-        }
-        String response = resBuffer.toString();  
-        System.out.println(response);
-		
-		getMethod.releaseConnection();
-		*/
-		return ;
-	}
-	
 }

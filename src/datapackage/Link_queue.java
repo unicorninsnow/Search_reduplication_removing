@@ -22,6 +22,23 @@ public class Link_queue {
 	public Result_Link_Struct get_last_link(){
 		return link_queue_list.getLast();
 	}
+	public Result_Link_Struct get_first_link(){
+		return link_queue_list.getFirst();
+	}
+	public int num_of_links(){
+		return link_queue_list.size();
+	}
+	public Result_Link_Struct get_link(int x){
+		return link_queue_list.get(x);
+	}
+	/*public Result_Link_Struct get_next_link(Result_Link_Struct x){
+		if(link_queue_list.contains(x)){
+			return link_queue_list.
+		}
+		else{
+			//异常
+		}
+	}*/
 	public void output_all_links(){
 		for(int i = 0;i < link_queue_list.size();++i){
 			link_queue_list.get(i).output();
