@@ -19,10 +19,8 @@ public class Search_engine_process {
 	Link_queue result_links = new Link_queue();
 	
 
-	public void extractLinks(String url,char search_mode,int Noofpagetoaccess/*,Set<String> result_links*/) {
-		//Set<String> result_links = new HashSet<String>();
+	public void extractLinks(String url,char search_mode,int Noofpagetoaccess) {
 		try {
-			
 			Parser parser = new Parser();
 			
 			parser.setEncoding("utf-8");
@@ -46,7 +44,7 @@ public class Search_engine_process {
 				// NodeList nodes =
 				// parser.extractAllNodesThatMatch(result_filter);
 
-				System.out.println("it's test_baidu");
+				//System.out.println("it's test_baidu");
 				if (nodes != null) {
 					for (int i = 0; i < nodes.size(); ++i) {
 						// 逐个取出符合条件的链接结点
@@ -92,10 +90,6 @@ public class Search_engine_process {
 			case 'G':// google
 				//parser.setEncoding("gb2312");
 				
-				//DownLoadFile downloadhtml;
-				//downloadhtml.downloadFile(url);
-				
-				
 				NodeFilter linkclass_r = new HasAttributeFilter("class","r");//用于google的链接结点过滤
 				NodeFilter linkclass_st = new HasAttributeFilter("class","st");//用于google的链接描述文字结点过滤
 				/*NodeFilter result_child_filter = new HasParentFilter(
@@ -107,7 +101,7 @@ public class Search_engine_process {
 						.extractAllNodesThatMatch(linkclass_r);
 				NodeList google_nodes_describe = parser.extractAllNodesThatMatch(linkclass_st);
 
-				System.out.println("it's test_google");
+				//System.out.println("it's test_google");
 				if (google_nodes_link != null) {
 					System.out.println("have" + google_nodes_link.size());
 					for (int i = 0; i < google_nodes_link.size(); ++i) {

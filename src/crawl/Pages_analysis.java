@@ -98,8 +98,7 @@ public class Pages_analysis {
 						mainbody_analyzed = mainbody_analyzed + temptext + "\n"; 
 						//System.out.println(temptext);
 					}
-					//System.out.println(temptext);
-					//System.out.println("=================heihei=============");
+					//System.out.println("=================paragraph=============");
 				}
 				//System.out.println(mainbody_analyzed);
 				//System.out.println("=================one page is finished.==================");
