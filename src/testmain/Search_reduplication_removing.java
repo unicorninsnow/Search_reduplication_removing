@@ -43,6 +43,8 @@ import org.htmlparser.filters.*;
 import org.htmlparser.util.*;
 import org.htmlparser.tags.LinkTag;
 
+import similarity_judge.Similarity_Judgement;
+
 import crawl.Pages_analysis;
 import crawl.Search_engine_process;
 import crawl.Search_word_process;
@@ -70,7 +72,44 @@ public class Search_reduplication_removing {
 		pages_analysis.analyze_pages(result_links);
 		
 		//输出result_links链接信息块链表
-		result_links.output_all_links();
+		//result_links.output_all_links();
+		
+		//判断各个链接间是否共指
+		Similarity_Judgement similarity_Judgement = new Similarity_Judgement();
+		for(int i = 0;i < result_links.num_of_links() - 1;++i){
+			for(int j = i + 1;j < result_links.num_of_links();++j){
+				String texti = result_links.get_link(i).getLink_text();
+				String titlei = result_links.get_link(i).getLink_title();
+				String textj = result_links.get_link(j).getLink_text();
+				String titlej = result_links.get_link(j).getLink_title();
+				if(similarity_Judgement.similarity_judge(texti,textj, 1)){
+					//System.out.println(result_links.get_link(i).getLink_title());
+					System.out.println(titlei);
+					System.out.println(result_links.get_link(i).getLink_url());
+					System.out.println("　与　");
+					//System.out.println(result_links.get_link(j).getLink_title());
+					System.out.println(titlej);
+					System.out.println(result_links.get_link(j).getLink_url());
+					System.out.println("共指.");
+					System.out.println("=========================================");
+				}
+				else
+				{/*
+					System.out.println(titlei);
+					System.out.println(result_links.get_link(i).getLink_url());
+					System.out.println("　与　");
+					//System.out.println(result_links.get_link(j).getLink_title());
+					System.out.println(titlej);
+					System.out.println(result_links.get_link(j).getLink_url());
+					System.out.println("不共指.");
+					System.out.println("=========================================");
+					*/
+				}
+			}
+		}
+		
+		
+		
 		
 		return ;
 	}
