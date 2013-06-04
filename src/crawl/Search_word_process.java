@@ -42,11 +42,8 @@ public class Search_word_process {
 	}
 
 	public void choose_engine_search_word() throws UnsupportedEncodingException{
-		
-		//putin(search_mode, search_word);
 		Set<String> result_links = new TreeSet<String>();
 		do {
-			//putin();
 			//System.out.println(search_word);
 			try {
 				if(search_word == "") throw new Exception();
