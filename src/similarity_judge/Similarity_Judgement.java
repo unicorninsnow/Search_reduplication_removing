@@ -34,8 +34,9 @@ public class Similarity_Judgement
 			count ++;
 		}
 
-		for (Iterator i = list.iterator(); i.hasNext();) 
+		/*for (Iterator i = list.iterator(); i.hasNext();) 
 			System.out.println(i.next());
+			*/
 	}
 	
 	/* 相似度判断 */
@@ -56,10 +57,12 @@ public class Similarity_Judgement
 				if  (list1.contains(str)) same ++;
 			}
 			double ratio = (double)same / all1; 
-			System.out.println(same);
+			/*System.out.println(same);
 			System.out.println(all1);
 			System.out.println(all2);
-			System.out.println(ratio);
+			*/
+			//System.out.println(ratio);
+	
 			if (ratio > JUDGE_RATIO) is_similar = true;
 			else is_similar = false;
 		}
