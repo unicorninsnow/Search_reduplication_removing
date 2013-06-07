@@ -1,0 +1,4 @@
+数据库localhost:3306/searchdb
+参加searchdb.sql
+用户search
+密码search

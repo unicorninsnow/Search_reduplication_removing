@@ -1,6 +1,6 @@
 ﻿<%@page language="java" pageEncoding="UTF-8"
 	contentType="text/html; charset=UTF-8"%>
-<%@page import="clustered.*"%>
+<%@page import="cluster.*"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.net.URLEncoder"%>
 <%@page import="java.net.URLDecoder"%>
@@ -36,10 +36,10 @@
 
 	/*利用谷歌API来获取搜索结果用于测试*/
 	String gapiurl = "https://www.googleapis.com/customsearch/v1?key=AIzaSyC6H3srhmy5nYxDLh9hdSOoqoVfCoK7vKE&cx=016107310399893718915:kqe8vf9-tza&q="
-			+ URLEncoder.encode(content, "UTF-8")
-			+ "&alt=json"
-			+ "&start=" + ((nowpage - 1) * 10 + 1);
-	Clustered fun = new Clustered();
+	+ URLEncoder.encode(content, "UTF-8")
+	+ "&alt=json"
+	+ "&start=" + ((nowpage - 1) * 10 + 1);
+	Cluster fun = new Cluster();
 %>
 <!DOCTYPE html>
 <html>
@@ -121,12 +121,14 @@
 					fun.process(content, nowpage);
 				} catch (Exception e) {
 					flag = false;
+					out.print("出错了！请稍后访问！"+e.getMessage());
 				}
 		%>
 		<ol id="outerres">
 			<%
 				int length = fun.getlist().size();
-					if (flag) {
+					if (flag) 
+					{
 						for (int i = 0; i < length; i++) {
 							Clusteredresult_Node node = fun.getlist().get(i)
 									.gethead(), nodep;

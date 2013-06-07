@@ -67,8 +67,13 @@ public class Search_engine_process {
 						
 						// 抓取有效链接的URL
 						// 该URL为百度跳转URL
-						LinkTag effective_linktag = (LinkTag) effective_tag;
-						result_link_struct.setLink_url(effective_linktag.getLink());
+						if( effective_tag instanceof LinkTag ) {
+							LinkTag effective_linktag = (LinkTag) effective_tag;
+							result_link_struct.setLink_url(effective_linktag.getLink());
+						}
+						else {
+							continue;
+						}
 						//result_links.get_last_link().link_url = effective_linktag.getLink();
 					//	System.out.println(result_link_struct.link_url);
 						

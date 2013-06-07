@@ -14,7 +14,7 @@ public class Search_reduplication_removing {
 	public static void main(String[] args) throws HttpException, IOException, ParserException {
 		//先调用Search_word_process类处理输入
 		Search_word_process searchword = new Search_word_process();
-		searchword.putin('B',"测试",1);
+		searchword.putin('B',"新时代的机器学习",1);
 		searchword.choose_engine_search_word();
 		searchword.access_to_appointed_page();
 		
@@ -66,9 +66,6 @@ public class Search_reduplication_removing {
 				}
 			}
 		}
-		
-		
-		
 		
 		return ;
 	}

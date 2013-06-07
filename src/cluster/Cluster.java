@@ -1,4 +1,4 @@
-﻿package clustered;
+﻿package cluster;
 
 import java.io.*;
 import java.sql.Connection;
@@ -13,13 +13,13 @@ import org.htmlparser.util.*;
 import similarity_judge.Similarity_Judgement;
 
 
-import crawl.Pages_analysis;
+//import crawl.Pages_analysis;
 import crawl.Search_engine_process;
 import crawl.Search_word_process;
 import datapackage.Link_queue;
 import datapackage.Result_Link_Struct;
 
-public class Clustered {
+public class Cluster {
 
 	ArrayList<Clusteredresult_Queue> list = new ArrayList<Clusteredresult_Queue>();
 	public ArrayList<Clusteredresult_Queue> getlist()
@@ -70,11 +70,10 @@ public class Clustered {
 		int flag = getdb(keyword, showpage);
 		if(flag == 2)
 			return;
-		ArrayList<String> strlist = new ArrayList<String>();
+		//ArrayList<String> strlist = new ArrayList<String>();
 		Clusteredresult_Queue queue;
-		Similarity_Judgement sj = new Similarity_Judgement();
 		
-		for(int i = (showpage-1) * 1 + 1;i <= showpage * 1;i++)
+		for(int i = (showpage-1) * 2 + 1;i <= showpage * 2;i++)
 		{
 			//先调用Search_word_process类处理输入
 			Search_word_process searchword = new Search_word_process();
@@ -91,12 +90,12 @@ public class Clustered {
 			Link_queue result_links = search_engine_process.getresult_links();
 		
 			//调用Pages_analysis类对各个链接进行正文提取
-			Pages_analysis pages_analysis = new Pages_analysis();
-			pages_analysis.analyze_pages(result_links);
+			//Pages_analysis pages_analysis = new Pages_analysis();
+			//pages_analysis.analyze_pages(result_links);
 			
 			
-			
-			for(int j = 0;j < 10;j++)
+			int Length = result_links.num_of_links();
+			for(int j = 0;j < Length;j++)
 			{
 				Result_Link_Struct res = result_links.get_link(j);
 				String title = "",url = "",abs = "",text = null;
@@ -104,21 +103,24 @@ public class Clustered {
 				title = res.getLink_title().toString();
 				url = res.getLink_url().toString();
 				abs = res.getLink_abstract().toString();
-				text = res.getLink_text().toString();
+				//text = res.getLink_text().toString();
 				}catch(Exception e)
 				{
 					if(text == null)
 						text = "";
 				}
-				int size = strlist.size(),k;
+				//int size = strlist.size();
+				int size = list.size();
+				int k;
 				for(k = 0;k < size;k++)
 				{
-					if(sj.similarity_judge(text,strlist.get(k),1))
+					//if(Similarity_Judgement.similarity_judge(text,strlist.get(k),1))
+					if(Similarity_Judgement.title_judge(title,list.get(k).gethead().gettitle().toString()))
 						break;
 				}
 				if(k == size)//没有近似的
 				{
-					strlist.add(text);
+					//strlist.add(text);
 					queue =  new Clusteredresult_Queue();
 					queue.insert(url, title, abs);
 					list.add(queue);

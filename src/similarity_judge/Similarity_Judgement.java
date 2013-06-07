@@ -19,7 +19,7 @@ public class Similarity_Judgement
 	private static int SENTENCE_MINLEN = 5;		//作为句子存储的最小长度
 	private static double JUDGE_RATIO = 0.4;	//判断相似的阈值
 	private static int MAX_HAMMING_DIS = 2;	//文本相似的hamming距离
-	private static double TITLE_RATIO = 0.6;	//判断标题是否相似的比例
+	private static double TITLE_RATIO = 0.4;	//判断标题是否相似的比例
 	
 	/* 分割以String保存的正文 */
 	public static void article_divide(String str,	List<String> list)

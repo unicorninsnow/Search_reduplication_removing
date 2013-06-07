@@ -1,4 +1,4 @@
-﻿package clustered;
+﻿package cluster;
 
 public class Clusteredresult_Queue
 {
