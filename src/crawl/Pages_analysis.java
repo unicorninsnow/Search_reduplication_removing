@@ -83,7 +83,6 @@ public class Pages_analysis {
 			//NodeFilter mainbody_filter_article = new HasAttributeFilter("class", "article");
 			//NodeFilter mainbody_filter = new OrFilter(mainbody_filter_p,mainbody_filter_article);
 			NodeList main_body = parser.extractAllNodesThatMatch(mainbody_filter);
-
 			if (main_body != null) {
 				//System.out.println("main_body.size ===== " + main_body.size());
 				for (int i = 0; i < main_body.size(); ++i) {
@@ -98,6 +97,7 @@ public class Pages_analysis {
 				//System.out.println(mainbody_analyzed);
 				//System.out.println("=================one page is finished.==================");
 				page_to_analyze.setLink_text(mainbody_analyzed);
+				
 			}
 			else{
 				System.out.println("why is title not exclusive?");

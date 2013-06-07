@@ -7,6 +7,7 @@ import org.htmlparser.filters.AndFilter;
 import org.htmlparser.filters.HasAttributeFilter;
 import org.htmlparser.filters.HasParentFilter;
 import org.htmlparser.filters.OrFilter;
+import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.nodes.TagNode;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.NodeList;
@@ -48,6 +49,7 @@ public class Search_engine_process {
 				//System.out.println("it's test_baidu");
 				if (nodes != null) {
 					for (int i = 0; i < nodes.size(); ++i) {
+
 						// 逐个取出符合条件的链接结点
 						Node textnode = (Node) nodes.elementAt(i);
 						
@@ -68,11 +70,16 @@ public class Search_engine_process {
 						// 抓取有效链接的URL
 						// 该URL为百度跳转URL
 						if( effective_tag instanceof LinkTag ) {
-							LinkTag effective_linktag = (LinkTag) effective_tag;
-							result_link_struct.setLink_url(effective_linktag.getLink());
+							try{
+								LinkTag effective_linktag = (LinkTag) effective_tag;
+								Parser parser1 = new Parser(effective_linktag.getLink());
+								result_link_struct.setLink_url(parser1.getURL());
+							}catch(Exception e){
+								break;
+							}
 						}
 						else {
-							continue;
+							break;
 						}
 						//result_links.get_last_link().link_url = effective_linktag.getLink();
 					//	System.out.println(result_link_struct.link_url);
