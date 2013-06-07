@@ -1,9 +1,9 @@
 <<<<<<< HEAD
-#Tue May 21 21:34:46 CST 2013
 eclipse.preferences.version=1
 encoding/<project>=UTF-8
+separateDerivedEncodings=true
 =======
 eclipse.preferences.version=1
 encoding/<project>=UTF-8
 separateDerivedEncodings=true
->>>>>>> origin/NXF
+>>>>>>> origin/develop

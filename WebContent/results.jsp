@@ -1,7 +1,6 @@
-﻿
-<%@page language="java" pageEncoding="UTF-8"
+﻿<%@page language="java" pageEncoding="UTF-8"
 	contentType="text/html; charset=UTF-8"%>
-	<%@page import="clustered.*"%>
+<%@page import="clustered.*"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.net.URLEncoder"%>
 <%@page import="java.net.URLDecoder"%>
@@ -41,7 +40,6 @@
 			+ "&alt=json"
 			+ "&start=" + ((nowpage - 1) * 10 + 1);
 	Clustered fun = new Clustered();
-
 %>
 <!DOCTYPE html>
 <html>
@@ -102,13 +100,13 @@
 <body onload="new Accordian('outerres',5,'header_highlight');">
 	<div id=head style="padding-top:20px;padding-bottom:15px;">
 		<a href="index.jsp" class="s_logo" onmousedown="onBackHome()"
-			style="float:left;padding-right:20px"><img src="images/banner.png" width="100"
-			height="38" border="0" alt="返回首页" title="返回首页"> </a>
+			style="float:left;padding-right:20px"><img
+			src="images/banner.png" width="100" height="38" border="0" alt="返回首页"
+			title="返回首页"> </a>
 
 		<div class="buttons">
 			<input type="text" maxlength="2048" size="41" id="content" name="wd"
-				value="<%=content%>"
-				style="font-size:16px;width:300px; height:25px"
+				value="<%=content%>" style="font-size:16px;width:300px; height:25px"
 				onkeypress="if(event.keyCode==13||event.keyCode==108){onSearch();}" />
 			<button type="submit" class="positive" onclick=onSearch();>
 				<img src="images/apply2.png" alt="" /> Search
@@ -117,14 +115,21 @@
 	</div>
 	<div class="r" style="padding-top:20px">
 		<%
+			boolean flag = true;
 			if (content != null && content != "") {
-				fun.process(content,nowpage);
+				try {
+					fun.process(content, nowpage);
+				} catch (Exception e) {
+					flag = false;
+				}
 		%>
 		<ol id="outerres">
 			<%
 				int length = fun.getlist().size();
-				for (int i = 0; i < length; i++) {
-						Clusteredresult_Node node = fun.getlist().get(i).gethead(), nodep;
+					if (flag) {
+						for (int i = 0; i < length; i++) {
+							Clusteredresult_Node node = fun.getlist().get(i)
+									.gethead(), nodep;
 			%>
 			<li style="list-style-type: none;">
 				<div class="difres">
@@ -144,17 +149,18 @@
 					<div id="sres<%=i%>" class="sres" style="display:none">
 						<ul>
 							<%nodep = node.getnext();
-					while (nodep != null) {%>
+						while (nodep != null) {%>
 							<li><a href="<%=nodep.geturl()%>"><%=nodep.gettitle()%></a>
 							</li>
 							<%nodep = nodep.getnext();
-					}%>
+						}%>
 						</ul>
 					</div>
 					 -->
-					 <% nodep = node.getnext();
-							if(nodep != null){
-						 %>
+					<%
+						nodep = node.getnext();
+									if (nodep != null) {
+					%>
 					<div id="basic-accordian">
 						<!--菜单开始-->
 						<div id="test<%=i%>-header" class="accordion_headings">相同结果</div>
@@ -162,26 +168,28 @@
 							<div class="accordion_child">
 								<ul>
 									<%
-												while (nodep != null) {
+										while (nodep != null) {
 									%>
 									<li><a href="<%=nodep.geturl()%>"><%=nodep.gettitle()%></a>
 										<div class="url"
 											style="white-space:nowrap;color: rgb(0, 153, 51);">
 											<cite><%=nodep.geturl()%></cite>
-										</div></li>
+										</div>
+									</li>
 									<%
 										nodep = nodep.getnext();
-												}
+														}
 									%>
 								</ul>
 							</div>
 						</div>
 					</div>
 					<!--菜单结束-->
-				</div>
-				<% } %>
+				</div> <%
+ 	}
+ %>
 			</li>
-			<br/>
+			<br />
 			<%
 				}
 			%>
@@ -189,24 +197,27 @@
 		<div class="bottom" style="color:blue; text-align:center">
 			<%
 				if (nowpage > 1) {
-						out.print("<a href=results.jsp?wd="
-								+ URLEncoder.encode(
-										URLEncoder.encode(content, "UTF-8"),
-										"UTF-8") + "&page=" + (nowpage - 1)
-								+ ">上一页</a>&nbsp;&nbsp;&nbsp;" + "第 " + nowpage + " 页" + "&nbsp;&nbsp;");
-					}
+							out.print("<a href=results.jsp?wd="
+									+ URLEncoder.encode(
+											URLEncoder.encode(content, "UTF-8"),
+											"UTF-8") + "&page=" + (nowpage - 1)
+									+ ">上一页</a>&nbsp;&nbsp;&nbsp;" + "第 " + nowpage
+									+ " 页" + "&nbsp;&nbsp;");
+						}
 			%>
 			<%
 				out.print("<a href=results.jsp?wd="
-							+ URLEncoder.encode(
-									URLEncoder.encode(content, "UTF-8"), "UTF-8")
-							+ "&page=" + (nowpage + 1) + ">下一页</a>");
+								+ URLEncoder.encode(
+										URLEncoder.encode(content, "UTF-8"),
+										"UTF-8") + "&page=" + (nowpage + 1)
+								+ ">下一页</a>");
 			%>
 			<!--  <a href="javascript:onPrev();" onclick="onPrev()">上一页</a> <a
 			href="javascript:onNext();" onclick="onNext()">下一页</a>
 			-->
 			<%
 				}
+			}
 			%>
 		</div>
 	</div>

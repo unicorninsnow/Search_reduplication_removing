@@ -14,13 +14,15 @@ import com.chenlb.mmseg4j.Word;
 
 public class Similarity_Judgement 
 {	
-	private  List<String> list1 = new ArrayList<String>();	
-	private  List<String> list2 = new ArrayList<String>();	//存储两篇文章分句的结果list
-	private  int SENTENCE_MINLEN = 5;		//作为句子存储的最小长度
-	private  double JUDGE_RATIO = 0.45;	//判断相似的阈值
-	private  int MAX_HAMMING_DIS = 2;	//文本相似的hamming距离
+	private static List<String> list1 = new ArrayList<String>();	
+	private static List<String> list2 = new ArrayList<String>();	//存储两篇文章分句的结果list
+	private static int SENTENCE_MINLEN = 5;		//作为句子存储的最小长度
+	private static double JUDGE_RATIO = 0.4;	//判断相似的阈值
+	private static int MAX_HAMMING_DIS = 2;	//文本相似的hamming距离
+	private static double TITLE_RATIO = 0.6;	//判断标题是否相似的比例
+	
 	/* 分割以String保存的正文 */
-	public  void article_divide(String str,	List<String> list)
+	public static void article_divide(String str,	List<String> list)
 	{
 		String punc_regex = "[。？！，.,?!\\s]";		// \s代表空格
 		Pattern punc_pat = Pattern.compile(punc_regex);	//from java.util.regex，创建一个基于上面的regex的pattern
@@ -34,13 +36,12 @@ public class Similarity_Judgement
 			count ++;
 		}
 
-		/*for (Iterator i = list.iterator(); i.hasNext();) 
+		for (Iterator i = list.iterator(); i.hasNext();) 
 			System.out.println(i.next());
-			*/
 	}
 	
 	/* 相似度判断 */
-	public  boolean similarity_judge(String article1, String article2, int algo_choice) throws IOException
+	public static boolean similarity_judge(String article1, String article2, int algo_choice) throws IOException
 	{
 		boolean is_similar = false;
 		if (algo_choice == 1)	//选择最简单的判重算法 
@@ -57,12 +58,10 @@ public class Similarity_Judgement
 				if  (list1.contains(str)) same ++;
 			}
 			double ratio = (double)same / all1; 
-			/*System.out.println(same);
+			System.out.println(same);
 			System.out.println(all1);
 			System.out.println(all2);
-			*/
-			//System.out.println(ratio);
-	
+			System.out.println(ratio);
 			if (ratio > JUDGE_RATIO) is_similar = true;
 			else is_similar = false;
 		}
@@ -84,15 +83,83 @@ public class Similarity_Judgement
 		return is_similar;
 	}
 	
-	public  int get_distance(char[] fp1, char[] fp2)
+	//利用最长公共子序列判断两个标题是否相似
+	public static boolean title_judge(String title1, String title2)
+	{
+		char[] ch1 = title1.toCharArray();
+		char[] ch2 = title2.toCharArray();
+		//System.out.println(ch1);
+		//System.out.println(ch2);
+		int len1 = ch1.length, len2 = ch2.length;
+		//System.out.println(ch1[0]);
+		//System.out.println(ch2[0]);
+		int[][] lcs = new int [len1 + 1][len2 + 1];
+		for (int i = 0; i <= len1; i++)
+			for (int j = 0; j <= len2; j++)
+				lcs[i][j] = 0;
+			
+		//动态规划求最长子序列的长度
+		for (int i = 1; i <= len1; i++)
+			for (int j = 1; j <= len2; j++)
+			{
+					if (ch1[i - 1] == ch2[j - 1]) 
+						lcs[i][j] = lcs[i-1][j-1] + 1;
+					else
+						lcs[i][j] = lcs[i][j - 1] > lcs[i - 1][j] ? lcs[i][j - 1] : lcs[i - 1][j];
+			}
+		
+		double maxlen  = lcs[len1][len2];
+		//System.out.println(maxlen);
+		double ratio  = (maxlen/len1 + maxlen/len2) / 2; 	//用占两个字符串比例的平均值作为衡量标准
+		//System.out.println(ratio);
+		if (ratio > TITLE_RATIO) return true;
+		else return false;
+	}
+	
+	//两个finggerprint的hamming距离
+	public static int get_distance(char[] fp1, char[] fp2)
 	{
 		int dis = 0;
 		for (int i = 0; i<32; i++)
 			if (fp1[i] != fp2[i]) dis ++;
 		return dis;
 	}
+
+	//利用最长公共子序列判断两个标题是否相似
+	public static boolean title_judge2(String title1, String title2)
+	{
+		char[] ch1 = title1.toCharArray();
+		char[] ch2 = title2.toCharArray();
+		//System.out.println(ch1);
+		//System.out.println(ch2);
+		int len1 = ch1.length, len2 = ch2.length;
+		//System.out.println(ch1[0]);
+		//System.out.println(ch2[0]);
+		int[][] lcs = new int [len1 + 1][len2 + 1];
+		for (int i = 0; i <= len1; i++)
+			for (int j = 0; j <= len2; j++)
+				lcs[i][j] = 0;
+			
+		//动态规划求最长子序列的长度
+		for (int i = 1; i <= len1; i++)
+			for (int j = 1; j <= len2; j++)
+			{
+					if (ch1[i - 1] == ch2[j - 1]) 
+						lcs[i][j] = lcs[i-1][j-1] + 1;
+					else
+						lcs[i][j] = lcs[i][j - 1] > lcs[i - 1][j] ? lcs[i][j - 1] : lcs[i - 1][j];
+			}
+		
+		double maxlen  = lcs[len1][len2];
+		//System.out.println(maxlen);
+		double ratio  = (maxlen/len1 + maxlen/len2) / 2; 	//用占两个字符串比例的平均值作为衡量标准
+		//System.out.println(ratio);
+		if (ratio > TITLE_RATIO) return true;
+		else return false;
+	}
 	
-	public  char[] getfp(Reader article1, Seg seg) throws IOException
+	//得到一篇文章对应的fingerprint
+	public static char[] getfp(Reader article1, Seg seg) throws IOException
 	{
 		char[] fp = new char[32];
 		MMSeg mmseg = new MMSeg(article1, seg);
@@ -121,7 +188,8 @@ public class Similarity_Judgement
 		return fp;
 	}
 	
-	public  char[] tobinary(int x)
+	//将一个数转换为对应二进制数的字符串
+	public static char[] tobinary(int x)
 	{
 		char[] bichar = new char[32];
         for (int i = 31; i >= 0; i--) {
@@ -134,9 +202,8 @@ public class Similarity_Judgement
         return bichar;
 	}
 	
-	
 	/*	从文件中读取文章（用于测试） */
-	public  String strfromfile(String file) throws IOException
+	public static String strfromfile(String file) throws IOException
 	{
 		InputStreamReader isr = new InputStreamReader(new FileInputStream(new File(file)),Charset.defaultCharset());
 		BufferedReader br = new BufferedReader(isr);
@@ -150,6 +217,21 @@ public class Similarity_Judgement
 		return buffer.toString();
 	}
 	
-	
+	public static void main(String[] args) throws Exception
+	{
+		//String str1 = strfromfile("D:\\test folder\\clustertest1.txt");
+		//String str2 = strfromfile("D:\\test folder\\clustertest2.txt");
+		//String str3 = strfromfile("D:\\test folder\\clustertest3.txt");
+		//String str4 = strfromfile("D:\\test folder\\clustertest4.txt");
+		//Boolean is_similar = similarity_judge(str1, str2);
+		//Boolean is_similar = similarity_judge(str1, str3);
+		//Boolean is_similar1 = similarity_judge(str1, str2, 2);
+		//Boolean is_similar2 = similarity_judge(str1, str4, 2);
+		String s1 = "新时代的机器学习";
+		String s2 = "新时期的机器学习";
+		Boolean b = title_judge(s1, s2);
+		System.out.println(b);
+		//System.out.println(is_similar1);
+		//System.out.println(is_similar2);	
+	}
 }
-

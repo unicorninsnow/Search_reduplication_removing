@@ -71,8 +71,8 @@ public class Search_engine_process {
 						
 						// 抓取每个有效连接的描述性文字
 						// CAUTION!!! //此处（在百度中）对描述性文字的抓取尚有问题
-						String describe_text = textnode.getParent()
-								.toPlainTextString();
+						String describe_text = textnode.getParent().toPlainTextString().replace("- 百度快照","").replace("-百度快照","");
+						//describe_text = describe_text.substring(describe_text.indexOf(''));
 					//	System.out.println(describe_text);
 						result_link_struct.setLink_abstract(describe_text);
 						//result_links.get_last_link().link_abstract = describe_text;
