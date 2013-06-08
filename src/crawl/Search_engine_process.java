@@ -72,14 +72,14 @@ public class Search_engine_process {
 						if( effective_tag instanceof LinkTag ) {
 							try{
 								LinkTag effective_linktag = (LinkTag) effective_tag;
-								Parser parser1 = new Parser(effective_linktag.getLink());
-								result_link_struct.setLink_url(parser1.getURL());
+								//Parser parser1 = new Parser(effective_linktag.getLink());
+								result_link_struct.setLink_url(effective_linktag.getLink());
 							}catch(Exception e){
-								break;
+								continue;
 							}
 						}
 						else {
-							break;
+							continue;
 						}
 						//result_links.get_last_link().link_url = effective_linktag.getLink();
 					//	System.out.println(result_link_struct.link_url);

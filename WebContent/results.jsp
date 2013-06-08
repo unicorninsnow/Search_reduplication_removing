@@ -79,20 +79,6 @@
 		tooltip.style.left = e.offsetLeft + 20;
 		tooltip.style.display = 'block';
 	}
-	function onPrev() {
-		content = encodeURI(encodeURI(
-<%=content%>
-	));
-		//document.getElementById("content").value = encodeURI(content);
-		window.location.href = "results.jsp?wd=" + content + "&page=" + (1);
-	}
-	function onNext() {
-		content = encodeURI(encodeURI(
-<%=content%>
-	));
-		//document.getElementById("content").value = encodeURI(content);
-		window.location.href = "results.jsp?wd=" + content + "&page=" + (1);
-	}
 </script>
 <link rel="stylesheet" type="text/css" media="all" href="css/style.css">
 <link rel="stylesheet" type="text/css" href="css/buttons.css" />
@@ -152,7 +138,7 @@
 						<ul>
 							<%nodep = node.getnext();
 						while (nodep != null) {%>
-							<li><a href="<%=nodep.geturl()%>"><%=nodep.gettitle()%></a>
+							<li><a href="<%=nodep.geturl()%>"  target="_blank"><%=nodep.gettitle()%></a>
 							</li>
 							<%nodep = nodep.getnext();
 						}%>
@@ -172,7 +158,7 @@
 									<%
 										while (nodep != null) {
 									%>
-									<li><a href="<%=nodep.geturl()%>"><%=nodep.gettitle()%></a>
+									<li><a href="<%=nodep.geturl()%>" target="_blank"><%=nodep.gettitle()%></a>
 										<div class="url"
 											style="white-space:nowrap;color: rgb(0, 153, 51);">
 											<cite><%=nodep.geturl()%></cite>
@@ -214,9 +200,6 @@
 										"UTF-8") + "&page=" + (nowpage + 1)
 								+ ">下一页</a>");
 			%>
-			<!--  <a href="javascript:onPrev();" onclick="onPrev()">上一页</a> <a
-			href="javascript:onNext();" onclick="onNext()">下一页</a>
-			-->
 			<%
 				}
 			}

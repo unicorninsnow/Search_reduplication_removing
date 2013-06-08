@@ -14,6 +14,7 @@ import similarity_judge.Similarity_Judgement;
 
 
 //import crawl.Pages_analysis;
+import crawl.Pages_analysis;
 import crawl.Search_engine_process;
 import crawl.Search_word_process;
 import datapackage.Link_queue;
@@ -65,12 +66,13 @@ public class Cluster {
 		}else
 			return 3;//有关键字但没有这页
 	}
-	public void process(String keyword,int showpage) throws SQLException, ClassNotFoundException, ParserException, IOException
+	public void process(String keyword,int showpage) throws SQLException, ClassNotFoundException, ParserException, IOException, InterruptedException
 	{
+		System.out.println("Start Searching...");
 		int flag = getdb(keyword, showpage);
 		if(flag == 2)
 			return;
-		//ArrayList<String> strlist = new ArrayList<String>();
+		ArrayList<String> strlist = new ArrayList<String>();
 		Clusteredresult_Queue queue;
 		
 		for(int i = (showpage-1) * 2 + 1;i <= showpage * 2;i++)
@@ -90,9 +92,9 @@ public class Cluster {
 			Link_queue result_links = search_engine_process.getresult_links();
 		
 			//调用Pages_analysis类对各个链接进行正文提取
-			//Pages_analysis pages_analysis = new Pages_analysis();
+			Pages_analysis pages_analysis = new Pages_analysis();
 			//pages_analysis.analyze_pages(result_links);
-			
+			pages_analysis.analyze_pages_use_thread(result_links);
 			
 			int Length = result_links.num_of_links();
 			for(int j = 0;j < Length;j++)
@@ -103,24 +105,24 @@ public class Cluster {
 				title = res.getLink_title().toString();
 				url = res.getLink_url().toString();
 				abs = res.getLink_abstract().toString();
-				//text = res.getLink_text().toString();
+				text = res.getLink_text().toString();
 				}catch(Exception e)
 				{
 					if(text == null)
 						text = "";
 				}
-				//int size = strlist.size();
-				int size = list.size();
+				int size = strlist.size();
+				//int size = list.size();
 				int k;
 				for(k = 0;k < size;k++)
 				{
-					//if(Similarity_Judgement.similarity_judge(text,strlist.get(k),1))
-					if(Similarity_Judgement.title_judge(title,list.get(k).gethead().gettitle().toString()))
+					if(Similarity_Judgement.similarity_judge(text,strlist.get(k),1))
+					//if(Similarity_Judgement.title_judge(title,list.get(k).gethead().gettitle().toString()))
 						break;
 				}
 				if(k == size)//没有近似的
 				{
-					//strlist.add(text);
+					strlist.add(text);
 					queue =  new Clusteredresult_Queue();
 					queue.insert(url, title, abs);
 					list.add(queue);
@@ -192,7 +194,7 @@ public class Cluster {
 			list.add(queue);
 		}
 	}*/
-	public void main(String[] args) throws IOException, SQLException, ClassNotFoundException, ParserException {
+	public void main(String[] args) throws IOException, SQLException, ClassNotFoundException, ParserException, InterruptedException {
 		process("a", 1);
 	}
 }

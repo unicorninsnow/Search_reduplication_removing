@@ -36,8 +36,9 @@ public class Similarity_Judgement
 			count ++;
 		}
 
-		for (Iterator i = list.iterator(); i.hasNext();) 
+		/*for (Iterator i = list.iterator(); i.hasNext();) 
 			System.out.println(i.next());
+			*/
 	}
 	
 	/* 相似度判断 */
@@ -58,10 +59,10 @@ public class Similarity_Judgement
 				if  (list1.contains(str)) same ++;
 			}
 			double ratio = (double)same / all1; 
-			System.out.println(same);
-			System.out.println(all1);
-			System.out.println(all2);
-			System.out.println(ratio);
+			//System.out.println(same);
+			//System.out.println(all1);
+			//System.out.println(all2);
+			//System.out.println(ratio);
 			if (ratio > JUDGE_RATIO) is_similar = true;
 			else is_similar = false;
 		}
@@ -76,7 +77,7 @@ public class Similarity_Judgement
 			//System.out.println(fp1);
 			//System.out.println(fp2);
 			int dis = get_distance(fp1, fp2);
-			System.out.println(dis);
+			//System.out.println(dis);
 			if (dis > MAX_HAMMING_DIS) is_similar =  false;
 			else is_similar =  true;
 		}

@@ -37,7 +37,7 @@ public class Page_thread implements Runnable{
 			try {
 				NodeList main_body = parser
 						.extractAllNodesThatMatch(mainbody_filter);
-
+				page_to_analyze.setLink_url(parser.getURL());
 				if (main_body != null) {
 					// System.out.println("main_body.size ===== " +
 					// main_body.size());
@@ -68,7 +68,12 @@ public class Page_thread implements Runnable{
 				parser.setEncoding(encode);
 				NodeList main_body = parser
 						.extractAllNodesThatMatch(mainbody_filter);
-
+				//String urlString = parser.getURL();
+				//System.out.println(urlString);
+				//System.out.println(page_to_analyze.getLink_url());
+				//page_to_analyze.setLink_url(urlString);
+				//System.out.println(page_to_analyze.getLink_url());
+				page_to_analyze.setLink_url(parser.getURL());
 				if (main_body != null) {
 					// System.out.println("main_body.size ===== " +
 					// main_body.size());
