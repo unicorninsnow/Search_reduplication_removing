@@ -152,7 +152,7 @@
 					%>
 					<div id="basic-accordian">
 						<!--菜单开始-->
-						<div id="test<%=i%>-header" class="accordion_headings">相同结果</div>
+						<div id="test<%=i%>-header" class="accordion_headings">相似结果</div>
 						<div id="test<%=i%>-content">
 							<div class="accordion_child">
 								<ul>
