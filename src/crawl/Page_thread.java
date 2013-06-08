@@ -27,7 +27,7 @@ public class Page_thread implements Runnable{
 		//System.out.println(page_to_analyze.getLink_url());
 		try {
 			Parser parser = new Parser(page_to_analyze.getLink_url());
-
+			parser.getConnection().setReadTimeout(1000);
 			NodeFilter mainbody_filter = new TagNameFilter("p");
 			// NodeFilter mainbody_filter_p = new TagNameFilter("p");
 			// NodeFilter mainbody_filter_article = new

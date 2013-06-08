@@ -72,7 +72,7 @@ public class Cluster {
 		int flag = getdb(keyword, showpage);
 		if(flag == 2)
 			return;
-		ArrayList<String> strlist = new ArrayList<String>();
+		//ArrayList<String> strlist = new ArrayList<String>();
 		Clusteredresult_Queue queue;
 		
 		for(int i = (showpage-1) * 2 + 1;i <= showpage * 2;i++)
@@ -111,18 +111,18 @@ public class Cluster {
 					if(text == null)
 						text = "";
 				}
-				int size = strlist.size();
-				//int size = list.size();
+				//int size = strlist.size();
+				int size = list.size();
 				int k;
 				for(k = 0;k < size;k++)
 				{
-					if(Similarity_Judgement.similarity_judge(text,strlist.get(k),1))
-					//if(Similarity_Judgement.title_judge(title,list.get(k).gethead().gettitle().toString()))
+					//if(Similarity_Judgement.similarity_judge(text,strlist.get(k),1))
+					if(Similarity_Judgement.title_judge(title,list.get(k).gethead().gettitle().toString()))
 						break;
 				}
 				if(k == size)//没有近似的
 				{
-					strlist.add(text);
+					//strlist.add(text);
 					queue =  new Clusteredresult_Queue();
 					queue.insert(url, title, abs);
 					list.add(queue);

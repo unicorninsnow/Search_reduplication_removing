@@ -95,6 +95,10 @@ public class Search_engine_process {
 						int cachemode = 0;
 						String cacheinfoString = "";
 						Node cacheinfo;
+						if(textnode.getNextSibling() == null)
+						{
+							continue;
+						}
 						if (!textnode.getNextSibling().toPlainTextString().contains("百度快照")){
 							cachemode = 0;//正常情况
 							cacheinfo = textnode.getParent().getLastChild();
@@ -120,12 +124,12 @@ public class Search_engine_process {
 											break;
 										}
 									}
-									if(has_cacheinfo){
+									if(cacheinfo.getNextSibling() != null){
 										cacheinfoString = cacheinfo.toPlainTextString();
 										cacheinfoString = cacheinfoString.concat(cacheinfo.getNextSibling().toPlainTextString())
 												.concat(cacheinfo.getNextSibling().getNextSibling().toPlainTextString());
 									}else{
-										cacheinfoString = "";
+										cacheinfoString = cacheinfo.toPlainTextString();
 									}
 									//System.out.println(cacheinfoString);
 								}

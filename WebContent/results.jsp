@@ -107,7 +107,8 @@
 					fun.process(content, nowpage);
 				} catch (Exception e) {
 					flag = false;
-					out.print("出错了！请稍后访问！"+e.getMessage());
+					out.print("出错了！请稍后访问！");
+					e.printStackTrace();
 				}
 		%>
 		<ol id="outerres">
