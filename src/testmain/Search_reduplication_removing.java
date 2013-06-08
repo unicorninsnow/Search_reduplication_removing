@@ -11,7 +11,7 @@ import datapackage.Link_queue;
 
 public class Search_reduplication_removing {
 
-	public static void main(String[] args) throws HttpException, IOException, ParserException {
+	public static void main(String[] args) throws HttpException, IOException, ParserException, InterruptedException {
 		//先调用Search_word_process类处理输入
 		Search_word_process searchword = new Search_word_process();
 		searchword.putin('B',"新时代的机器学习",1);
@@ -28,7 +28,9 @@ public class Search_reduplication_removing {
 		
 		//调用Pages_analysis类对各个链接进行正文提取
 		Pages_analysis pages_analysis = new Pages_analysis();
-		pages_analysis.analyze_pages(result_links);
+		//pages_analysis.analyze_pages(result_links);
+		pages_analysis.analyze_pages_use_thread(result_links);
+		
 		
 		//输出result_links链接信息块链表
 		//result_links.output_all_links();

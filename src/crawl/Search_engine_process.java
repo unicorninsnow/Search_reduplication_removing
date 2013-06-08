@@ -32,7 +32,7 @@ public class Search_engine_process {
 			parser.getConnectionManager().setProxyPort(8118);
 			
 			parser.setURL(url);
-			System.out.println(url);
+			//System.out.println(url);
 			switch (search_mode) {
 			case 'B':// 百度
 				//parser.setEncoding("utf-8");
@@ -65,7 +65,7 @@ public class Search_engine_process {
 						// 抓取有效链接的链接标题
 						String link_title = effective_tag.toPlainTextString();
 						result_link_struct.setLink_title(link_title);
-						System.out.println(link_title);
+						//System.out.println(link_title);
 						
 						// 抓取有效链接的URL
 						// 该URL为百度跳转URL
@@ -95,7 +95,6 @@ public class Search_engine_process {
 						int cachemode = 0;
 						String cacheinfoString = "";
 						Node cacheinfo;
-						System.out.println(textnode.getNextSibling().toPlainTextString());
 						if (!textnode.getNextSibling().toPlainTextString().contains("百度快照")){
 							cachemode = 0;//正常情况
 							cacheinfo = textnode.getParent().getLastChild();
@@ -110,18 +109,24 @@ public class Search_engine_process {
 								} else {
 									//表示不能通过子女结点取到 仅确定是最后几个结构中的一部分 通过字符串拼接得到快照等信息
 									cachemode = 2;
+									boolean has_cacheinfo = true;
 									cacheinfo = textnode.getParent().getLastChild();
 									while (!cacheinfo.getText().equals("span class=\"g\"")) {
 										cacheinfo = cacheinfo.getPreviousSibling();
 										if ((cacheinfo == textnode.getParent().getFirstChild())
 												&& (!cacheinfo.getText().equals("span class=\"g\""))) {
 											System.out.println("错误。没有百度快照tag");
+											has_cacheinfo = false;
 											break;
 										}
 									}
-									cacheinfoString = cacheinfo.toPlainTextString();
-									cacheinfoString = cacheinfoString.concat(cacheinfo.getNextSibling().toPlainTextString())
-											.concat(cacheinfo.getNextSibling().getNextSibling().toPlainTextString());
+									if(has_cacheinfo){
+										cacheinfoString = cacheinfo.toPlainTextString();
+										cacheinfoString = cacheinfoString.concat(cacheinfo.getNextSibling().toPlainTextString())
+												.concat(cacheinfo.getNextSibling().getNextSibling().toPlainTextString());
+									}else{
+										cacheinfoString = "";
+									}
 									//System.out.println(cacheinfoString);
 								}
 							}
@@ -133,8 +138,8 @@ public class Search_engine_process {
 							cacheinfo = cacheinfo.getPreviousSibling();
 							cacheinfoString = cacheinfo.toPlainTextString();
 						}
-						System.out.println(cachemode);
-						System.out.println(cacheinfoString);
+						//System.out.println(cachemode);
+						//System.out.println(cacheinfoString);
 
 						
 						// 抓取每个有效连接的描述性文字
@@ -158,7 +163,7 @@ public class Search_engine_process {
 						//确定第几页
 						result_link_struct.setLink_page_from(Noofpagetoaccess);
 						result_links.add_link(result_link_struct);
-						System.out.println("******==================******");
+						//System.out.println("******==================******");
 					}
 				}
 				break;
