@@ -14,10 +14,43 @@ import datapackage.Link_queue;
 import datapackage.Result_Link_Struct;
 
 
-
+/**
+ * 对链接信息块队列中的所有链接进行访问并抓取相关信息<br/>
+ * 包括 正文抓取 更新URL 更新标题等
+ * @author Daniel Qian
+ * @version 1.1 对线程的管理策略改为 抓取线程并发运行 主线程被阻塞至所以线程结束
+ *
+ */
 public class Pages_analysis {
-	final int text_para_threshold = 35;
+	@Deprecated final int text_para_threshold = 35;
+
+	/**
+	 * 对 链接访问抓取的线程队列 进行管理的函数<br/>
+	 * 管理策略为 抓取线程并发运行 主线程被阻塞至所以线程结束
+	 * @param result_links 链接信息块队列
+	 */
+	public void analyze_pages_use_thread(Link_queue result_links){
+		//为每一个链接信息块创建一个线程
+		Thread  []page = new Thread[result_links.num_of_links()];
+		//对每个线程进行信息块参数传入 并开始并发运行线程
+		for(int i = 0;i < result_links.num_of_links();++i){
+			page[i] = new Thread(new Page_thread(result_links.get_link(i)));
+			page[i].start();
+		}
+		//如果全部完成 则标志位为true
+		boolean is_all_thread_finished = false;
+		while (!is_all_thread_finished) {
+			//若没有全部完成 则主线程被阻塞在while循环中
+			is_all_thread_finished = true;
+			for (int i = 0; i < result_links.num_of_links(); ++i) {
+				//只要有活着的线程 即没有完成的  则(!page[i].isAlive()) == false
+				//则is_all_thread_finished == false
+				is_all_thread_finished = is_all_thread_finished && (!page[i].isAlive());
+			}
+		}
+	}
 	
+	@Deprecated
 	public void analyze_pages(Link_queue result_links){
 		for(int i = 0;i < result_links.num_of_links();++i){
 			//get_page_title(result_links.get_link(i));
@@ -27,6 +60,7 @@ public class Pages_analysis {
 		return;
 	}
 	
+	@Deprecated 
 	public String get_page_title(String url_to_analyze) {
 		String title_analyzed = "";
 		try {
@@ -74,6 +108,7 @@ public class Pages_analysis {
 		return title_analyzed;
 	}
 
+	@Deprecated 
 	public void get_page_mainbody(Result_Link_Struct page_to_analyze) {
 		String mainbody_analyzed = "";
 		// System.out.println(page_to_analyze.getLink_title());
@@ -114,6 +149,7 @@ public class Pages_analysis {
 				} else {
 					System.out.println("why is title not exclusive?");
 				}
+				page_to_analyze.setLink_url(parser.getURL());
 			} catch (EncodingChangeException e) {
 				String encode = e.toString().split("to ")[1];
 				encode = encode.split(" at")[0];
@@ -145,6 +181,7 @@ public class Pages_analysis {
 				} else {
 					System.out.println("why is title not exclusive?");
 				}
+				page_to_analyze.setLink_url(parser.getURL());
 			}
 		} catch (ParserException e) {
 			e.printStackTrace();
@@ -152,27 +189,9 @@ public class Pages_analysis {
 		return;
 	}
 
+	@Deprecated
 	public void update_page_url(Result_Link_Struct page_to_analyze){
 		
 	}
 
-	public void analyze_pages_use_thread(Link_queue result_links) throws InterruptedException{
-		Thread  []page = new Thread[10];
-		for(int i = 0;i < result_links.num_of_links();++i){
-			page[i] = new Thread(new Page_thread(result_links.get_link(i)));
-			page[i].start();
-		}
-		//如果全部完成，则标志位为true
-		boolean is_all_thread_finished = false;
-		while (!is_all_thread_finished) {
-			is_all_thread_finished = true;
-			for (int i = 0; i < result_links.num_of_links(); ++i) {
-				//只要有活着的线程 即没有完成的  则(!page[i].isAlive()) == false
-				//则is_all_thread_finished == false
-				is_all_thread_finished = is_all_thread_finished && (!page[i].isAlive());
-			}
-		}
-	}
-
-	
 }

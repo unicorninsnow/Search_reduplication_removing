@@ -16,25 +16,42 @@ import org.htmlparser.visitors.NodeVisitor;
 import datapackage.Result_Link_Struct;
 import datapackage.Link_queue;
 
+/**
+ * 该类为分析搜索结果页面的类<br/>
+ * 将各个结果链接的标题 URL 摘要等信息 抓取到相应的链接信息块队列中
+ * @author Daniel
+ * @version 1.1
+ */
 public class Search_engine_process {
-	//如何处理Search_engine_process类和Pages_analysis类对result_links链表的共同使用问题
+	//////////如何处理Search_engine_process类和Pages_analysis类对result_links链表的共同使用问题
+	/**链接信息块队列<br/>典型长度值为10n*/
 	Link_queue result_links = new Link_queue();
 	
-
-	public void extractLinks(String url,char search_mode,int Noofpagetoaccess) {
+	/**
+	 * 对结果页面进行 各链接的标题 URL 摘要等信息进行抓取 的具体函数
+	 * @param url (String) 将要被抓取的搜索结果页面的URL
+	 * @param search_mode (char) 基础搜索引擎代码
+	 * @param Noofpagetoaccess (int) 结果页面的页号(是对应链接的信息 用于存入信息块)
+	 * @throws Exception 抓取过程异常 主要是parser异常
+	 */
+	public void extractLinks(String url,char search_mode,int Noofpagetoaccess) throws Exception {
 		try {
 			Parser parser = new Parser();
 			
 			parser.setEncoding("utf-8");
 
+			/*代理设置 用于解决国内网络有时被墙的情况*/
 			parser.getConnectionManager().setProxyHost("127.0.0.1");
 			parser.getConnectionManager().setProxyPort(8118);
 			
 			parser.setURL(url);
-			//System.out.println(url);
+			
+			/*
+			 * 对不同的基础搜索引擎所对应的结果页面
+			 * 分情况进行信息抓取
+			 */
 			switch (search_mode) {
 			case 'B':// 百度
-				//parser.setEncoding("utf-8");
 				NodeFilter result_filter_regu = new HasAttributeFilter("class", "result");
 				NodeFilter result_filter_op = new HasAttributeFilter("class", "result-op");
 				OrFilter result_filter = new OrFilter(result_filter_regu,result_filter_op);
@@ -45,7 +62,6 @@ public class Search_engine_process {
 				NodeList nodes = parser.extractAllNodesThatMatch(linkclass_t);
 				// NodeList nodes = parser.extractAllNodesThatMatch(result_filter);
 
-				//System.out.println("it's test_baidu");
 				if (nodes != null) {
 					for (int i = 0; i < nodes.size(); ++i) {
 						// 逐个取出符合条件的链接结点
@@ -60,12 +76,12 @@ public class Search_engine_process {
 						//result_links.create_new_link();
 						
 						
-						// 抓取有效链接的链接标题
+						/* 抓取有效链接的链接标题 */
 						String link_title = effective_tag.toPlainTextString();
 						result_link_struct.setLink_title(link_title);
 						//System.out.println(link_title);
 						
-						// 抓取有效链接的URL
+						/* 抓取有效链接的URL */
 						// 该URL为百度跳转URL
 						LinkTag effective_linktag = (LinkTag) effective_tag;
 						result_link_struct.setLink_url(effective_linktag.getLink());
@@ -73,13 +89,14 @@ public class Search_engine_process {
 					//	System.out.println(result_link_struct.link_url);
 						
 						
-						
-						// 在链接结点中找到最后百度快照等信息的结点部分
-						//cachemode表示是那一种快照格式类型 
-						//0表示正常 即为textnode的后继的后继 同时也是其父结点的最后一个子女
-						//1表示其为textnode的后继的后继 但不是其父结点的最后一个子女 但是最后第二个
-						//2表示不能通过子女结点取到
-						//3表示恰为随后一个  不是传统的子女结构
+						/* 
+						 * 在链接结点中找到最后百度快照等信息的结点部分
+						 * cachemode表示是那一种快照格式类型 
+						 * 0表示正常 即为textnode的后继的后继 同时也是其父结点的最后一个子女
+						 * 1表示其为textnode的后继的后继 但不是其父结点的最后一个子女 但是最后第二个
+						 * 2表示不能通过子女结点取到
+						 * 3表示恰为随后一个  不是传统的子女结构
+						*/
 						int cachemode = 0;
 						String cacheinfoString = "";
 						Node cacheinfo;
@@ -115,7 +132,6 @@ public class Search_engine_process {
 									}else{
 										cacheinfoString = "";
 									}
-									//System.out.println(cacheinfoString);
 								}
 							}
 						}else{
@@ -126,8 +142,6 @@ public class Search_engine_process {
 							cacheinfo = cacheinfo.getPreviousSibling();
 							cacheinfoString = cacheinfo.toPlainTextString();
 						}
-						//System.out.println(cachemode);
-						//System.out.println(cacheinfoString);
 
 						
 						// 抓取每个有效连接的描述性文字
@@ -157,17 +171,12 @@ public class Search_engine_process {
 				break;
 
 			case 'G':// google
-				//parser.setEncoding("gb2312");
-				
 				NodeFilter linkclass_r = new HasAttributeFilter("class","r");//用于google的链接结点过滤
 				NodeFilter linkclass_st = new HasAttributeFilter("class","st");//用于google的链接描述文字结点过滤
-				/*NodeFilter result_child_filter = new HasParentFilter(
-						result_filter, true);
-				AndFilter result_link_filter = new AndFilter(linkclass_t,
-						result_child_filter);
+				/*NodeFilter result_child_filter = new HasParentFilter(result_filter, true);
+				AndFilter result_link_filter = new AndFilter(linkclass_t,result_child_filter);
 				*/
-				NodeList google_nodes_link = parser
-						.extractAllNodesThatMatch(linkclass_r);
+				NodeList google_nodes_link = parser.extractAllNodesThatMatch(linkclass_r);
 				NodeList google_nodes_describe = parser.extractAllNodesThatMatch(linkclass_st);
 
 				//System.out.println("it's test_google");
@@ -204,13 +213,13 @@ public class Search_engine_process {
 				}
 				break;
 			default:
-				System.out.println("errorrrrrrrrr");
+				throw new Exception("Illegal search mode!");
 			}
 
 		} catch (ParserException e) {
 			e.printStackTrace();
+			throw new Exception("Parser Exception!");
 		}
-		// return result_links;
 		return;
 	}
 
