@@ -98,7 +98,8 @@ public class Page_thread implements Runnable {
 				encode = encode.split(" at")[0];
 				// 重设编码
 				parser.setEncoding(encode);
-
+				parser.reset();
+				
 				// 进行标题更新
 				update_title(parser, title_filter);
 				// 进行正文抓取
@@ -163,7 +164,7 @@ public class Page_thread implements Runnable {
 			if (titles == null)
 				throw new Exception("Title is null!");
 			if (titles.size() != 1){
-				throw new Exception("Title is not exclusive!");
+				throw new Exception("Title is not exclusive! Size = " + titles.size());
 			}
 			// 获取该链接标题
 			Node title_text = (Node) titles.elementAt(0);
@@ -173,8 +174,9 @@ public class Page_thread implements Runnable {
 			page_to_analyze.setLink_title(title_analyzed);
 		} catch (Exception e) {
 			// TODO 自动生成的 catch 块
+			System.out.println(page_to_analyze.getLink_title() + page_to_analyze.getLink_url() + 
+					"There're some errors in title updating. Title will not be updated.");
 			e.printStackTrace();
-			System.out.println("There're some errors in title updating. Title will not be updated.");
 		}
 		
 		// 对解析器进行重置 以便后续使用parser进行解析不会出错

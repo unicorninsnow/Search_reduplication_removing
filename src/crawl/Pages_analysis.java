@@ -50,12 +50,22 @@ public class Pages_analysis {
 		}
 	}
 	
-	@Deprecated
-	public void analyze_pages(Link_queue result_links){
-		for(int i = 0;i < result_links.num_of_links();++i){
-			//get_page_title(result_links.get_link(i));
-			get_page_mainbody(result_links.get_link(i));
-		}
+	/**
+	 * 用于测试的线程管理函数 <br/>
+	 * 与正式执行的管理函数的区别是其没有进行多线程并发 而是顺序执行
+	 * @param result_links
+	 * @throws InterruptedException 
+	 */
+	public void analyze_pages(Link_queue result_links) throws InterruptedException{
+		//为每一个链接信息块创建一个线程
+				Thread  []page = new Thread[result_links.num_of_links()];
+				//对每个线程进行信息块参数传入 并开始顺序运行线程
+				for(int i = 0;i < result_links.num_of_links();++i){
+					page[i] = new Thread(new Page_thread(result_links.get_link(i)));
+					page[i].start();
+					page[i].join();
+				}
+			
 		
 		return;
 	}
