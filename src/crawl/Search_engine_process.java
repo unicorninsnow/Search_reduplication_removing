@@ -273,61 +273,97 @@ public class Search_engine_process {
 						Node resultNode = (Node) nodes.elementAt(i);
 						//////////暂未处理result-op的情况
 						
+						
+						//尝试获取链接号数
+						System.out.println(((TagNode)resultNode).getAttribute("id"));
+						
 //						System.out.println(resultNode.toHtml());
 						System.out.println(resultNode.getText());
 						
 						
 
+						
 						//获取结果块的第一个tr结点 trNode   即有效内容的tr结点
 						NodeList trNodeList = new NodeList();
 						resultNode.collectInto(trNodeList, trFilter);
 						if (trNodeList.size() == 0)	throw new Exception("no tr tag.errrrrrrrrrrr.");
 						Node trNode = trNodeList.elementAt(0);
 						
+						
+						/* 处理链接标题和链接URL(百度跳转URL) */
+						// 有效的真正链接结点(包含标题和URL信息的最精确的结点)
+						LinkTag effective_linktag = null;
+						// 用以存储主链接结点是否常规的标志位
+						boolean is_mainlink_regular = true;
+						
 						//对主tr结点中有几个<h3 class="t">...</h3>这样的有效连接结点进行分类讨论
 						//mianklinkNode即是<h3 class="t">...</h3>结点
 						NodeList mainlinkNodeList = new NodeList();
 						trNode.collectInto(mainlinkNodeList, linkclass_t);
 						Node mainlinkNode = null;
-						if(mainlinkNodeList.size() == 0){
-							//处理没有<h3 class="t">...</h3>的情况
-						}else{
+						if(mainlinkNodeList.size() != 0){
 							//取第一个<h3 class="t">...</h3>
 							mainlinkNode = mainlinkNodeList.elementAt(0);
+							
+							// 取出有效的真正链接结点effective_linktag
+							// 此处所做的改变是能保证取出的一定是linktag 故不会发生强制类型转换出错的问题
+							if (mainlinkNode.getFirstChild() instanceof LinkTag) {
+								//常规情况 能在第一个<h3 class="t">...</h3>的第一个子结点中取出linktag
+								effective_linktag = (LinkTag) mainlinkNode.getFirstChild();
+							} else {
+								//非常规情况 将是否常规的标志位置false 后转处理非常规的代码
+								is_mainlink_regular = false;
+							}
+						}else{
+							//没有<h3 class="t">...</h3>的情况 为非常规主链接结点的情形
+							//将is_mainlink_regular标志位设为非常规
+							is_mainlink_regular = false;
 						}
 						
-						System.out.println("主链接结点标题：" + mainlinkNode.toPlainTextString());
-						
-						if(mainlinkNode.getFirstChild() instanceof LinkTag){
-							System.out.println("YYYYYYES! It's first child.");
-							LinkTag effective_linktag = (LinkTag) mainlinkNode.getFirstChild();
-							result_link_struct.setLink_url(effective_linktag.getLinkText());
-							System.out.println("linktitle = " + effective_linktag.getLinkText());
-							result_link_struct.setLink_url(effective_linktag.getLink()); 
-							System.out.println("linkurl = " + effective_linktag.getLink());
-
-						}else{
-							System.out.println("NNNNNNO! It's not the first child.");
+						//处理非常规的主链接结点的情形
+						if(is_mainlink_regular == false){
 							NodeFilter link_Filter = new NodeClassFilter(LinkTag.class);
 							NodeList linkList = new NodeList();
 							trNode.collectInto(linkList, link_Filter);
 							System.out.println(linkList.size());
-							LinkTag effective_linktag = (LinkTag) linkList.elementAt(0);
-							result_link_struct.setLink_url(effective_linktag.getLinkText());
-							System.out.println("linktitle = " + effective_linktag.getLinkText());
-							result_link_struct.setLink_url(effective_linktag.getLink());
-							System.out.println("linkurl = " + effective_linktag.getLink());
-							
+							effective_linktag = (LinkTag) linkList.elementAt(0);
+						}
+						
+						//存储链接标题
+						result_link_struct.setLink_url(effective_linktag.getLinkText());
+						System.out.println("linktitle = " + effective_linktag.getLinkText());
+						//存储链接URL(此处为百度跳转URL)
+						result_link_struct.setLink_url(effective_linktag.getLink());
+						System.out.println("linkurl = " + effective_linktag.getLink());
+						
+						
+						/* 处理摘要 */
+						NodeFilter cabstractFilter = new HasAttributeFilter("class", "c-abstract");
+						NodeList abstractNodeList = new NodeList();
+						trNode.collectInto(abstractNodeList, cabstractFilter);
+						Node abstractNode = null;
+						if(abstractNodeList.size() != 0){
+							//处理最简单的摘要模式 直接取第一个c-abstract结点
+							abstractNode = abstractNodeList.elementAt(0);
+							System.out.println("linkabstract = " + abstractNode.toPlainTextString());
+							result_link_struct.setLink_abstract(abstractNode.toPlainTextString());
+						}else{
+							//处理各种非常规的摘要模式
+							System.out.println("sorry.非常规的摘要模式!");
+							//////////尚未完成
 							
 						}
+						
+						
+						
 						
 //						Node trNode = tbodyNode.elementAt(0);
 //						NodeList trchildrenList = trNode.getChildren();
 //						System.out.println("children size = " + trchildrenList.elementAt(0).getText());
 //						
 						
-						
-						
+						//将该链接的信息块 顺序存入链接信息块队列中
+						result_links.add_link(result_link_struct);
 						System.out.println("==========================================================");
 						
 						
