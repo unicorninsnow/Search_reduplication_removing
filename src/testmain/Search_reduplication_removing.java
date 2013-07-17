@@ -55,7 +55,7 @@ public class Search_reduplication_removing {
 		//先调用Search_word_process类处理输入
 		Search_word_process searchword = null;
 		try {
-			searchword = new Search_word_process('B',"新时代的机器学习",2);
+			searchword = new Search_word_process('B',"人工智能",1);
 			searchword.handle_search_word_url();
 		} catch (Exception e) {
 			// TODO 自动生成的 catch 块
@@ -86,7 +86,7 @@ public class Search_reduplication_removing {
 		
 		
 		//输出result_links链接信息块链表
-//		result_links.output_all_links();
+		result_links.output_all_links();
 		
 		return ;
 	}

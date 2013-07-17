@@ -21,8 +21,10 @@ public class Result_Link_Struct {
 	private String link_abstract;
 	/**链接正文 (String)*/
 	private String link_text;
-	/**链接来自原第几个搜索结果页面 (int)*/
+	/**链接来自原第几个搜索结果页面 (int > 0)*/
 	private int link_page_from;
+	/**链接是原来的第几个搜索结果 (int > 0)*/
+	private int link_num_from;
 	/**聚合后所在的组*/
 	int cluster_id;
 	
@@ -37,7 +39,7 @@ public class Result_Link_Struct {
 		System.out.println("链接url： " + getLink_url());
 		System.out.println("链接摘要： " + getLink_abstract());
 		System.out.println("链接正文： " + getLink_text());
-		System.out.println("链接所在页码： " + getLink_page_from());
+		System.out.println("链接所在页码： " + getLink_page_from() + "        链接原号数： " + getLink_num_from());
 		System.out.println("******************************************************************************************");
 	}
 
@@ -73,6 +75,13 @@ public class Result_Link_Struct {
 		this.link_page_from = link_page_from;
 	}
 
+	public int getLink_num_from() {
+		return link_num_from;
+	}
+	public void setLink_num_from(int link_num_from) {
+		this.link_num_from = link_num_from;
+	}
+	
 	public String getLink_text() {
 		return link_text;
 	}

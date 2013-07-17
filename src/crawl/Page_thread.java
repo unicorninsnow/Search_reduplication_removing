@@ -114,10 +114,10 @@ public class Page_thread implements Runnable {
 	/**
 	 * 实际进行正文抓取的核心函数
 	 * @version 1.0 连续纯文本阈值法
-	 * @param parser 该链接的剖析器
+	 * @param parser 该链接的解析器
 	 * @param mainbody_filter 页面正文的过滤方式
 	 * @param mainbody_analyzed 存放正文的字符串
-	 * @throws ParserException 剖析器的异常
+	 * @throws ParserException 解析器的异常
 	 * @throws Exception 正文为空异常
 	 */
 	public void get_mainbody(Parser parser, NodeFilter mainbody_filter) throws ParserException, Exception {
@@ -152,9 +152,9 @@ public class Page_thread implements Runnable {
 	
 	/**
 	 * 对链接的标题进行更新的函数
-	 * @param parser 该链接的剖析器
+	 * @param parser 该链接的解析器
 	 * @param title_filter 标题的过滤方式
-	 * @throws ParserException 剖析器的异常
+	 * @throws ParserException 解析器的异常
 	 */
 	public void update_title(Parser parser, NodeFilter title_filter) throws ParserException {
 		String title_analyzed = "";
