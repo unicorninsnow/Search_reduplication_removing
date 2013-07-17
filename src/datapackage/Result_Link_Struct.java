@@ -35,11 +35,11 @@ public class Result_Link_Struct {
 	 * 将该链接信息块的信息 输出至控制台
 	 */
 	public void output(){
-		System.out.println("链接标题： " + getLink_title());
-		System.out.println("链接url： " + getLink_url());
-		System.out.println("链接摘要： " + getLink_abstract());
-		System.out.println("链接正文： " + getLink_text());
-		System.out.println("链接所在页码： " + getLink_page_from() + "        链接原号数： " + getLink_num_from());
+		System.out.println("链接标题： " + link_title);
+		System.out.println("链接url： " + link_url);
+		System.out.println("链接摘要： " + link_abstract);
+		System.out.println("链接正文： " + link_text);
+		System.out.println("链接所在页码： " + link_page_from + "        链接原号数： " + link_num_from);
 		System.out.println("******************************************************************************************");
 	}
 
