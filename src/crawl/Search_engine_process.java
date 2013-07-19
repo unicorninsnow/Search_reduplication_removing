@@ -43,8 +43,8 @@ public class Search_engine_process {
 			parser.setEncoding("utf-8");
 
 			/*代理设置 用于解决国内网络有时被墙的情况*/
-			parser.getConnectionManager().setProxyHost("127.0.0.1");
-			parser.getConnectionManager().setProxyPort(8118);
+			Parser.getConnectionManager().setProxyHost("127.0.0.1");
+			Parser.getConnectionManager().setProxyPort(8118);
 			
 			parser.setURL(url);
 			
@@ -237,14 +237,14 @@ public class Search_engine_process {
 	public void test_extractLinks(String url,char search_mode,int Noofpagetoaccess) throws Exception {
 		try {
 			Parser parser = new Parser();
-			
-			parser.setEncoding("utf-8");
 
 			/*代理设置 用于解决国内网络有时被墙的情况*/
-			parser.getConnectionManager().setProxyHost("127.0.0.1");
-			parser.getConnectionManager().setProxyPort(8118);
+//			Parser.getConnectionManager().setProxyHost("127.0.0.1");
+//			Parser.getConnectionManager().setProxyPort(8118);
 			
 			parser.setURL(url);
+//			System.out.println(parser.getURL());
+			parser.setEncoding("utf-8");
 			
 			/*
 			 * 对不同的基础搜索引擎所对应的结果页面
@@ -252,9 +252,22 @@ public class Search_engine_process {
 			 */
 			switch (search_mode) {
 			case 'B':// 百度
+				parser.setEncoding("utf-8");
 				extractLinks_baidu(parser, Noofpagetoaccess);
 				break;
 			case 'G':// 谷歌
+				System.out.println(url);
+				
+				System.out.println(parser.getEncoding());
+//				NodeFilter result_filter = new HasAttributeFilter("class", "g");
+//				NodeList nodes = parser.extractAllNodesThatMatch(result_filter);
+//				for (int i = 0; i < nodes.size(); ++i) {
+//					Node resultNode = (Node) nodes.elementAt(i);
+//					String x = resultNode.toPlainTextString();
+//					System.out.println(x);
+//				}
+				
+				
 				extractLinks_google(parser, Noofpagetoaccess);
 				break;
 			default:
@@ -289,16 +302,17 @@ public class Search_engine_process {
 
 				// 逐个取出符合条件的链接结点
 				Node resultNode = (Node) nodes.elementAt(i);
-				if (((TagNode) resultNode).getAttribute("class") == "result") {
-					/* class="result"的正常情况 */
-					// 获取链接所在原页号
-					result_link_struct.setLink_page_from(Noofpagetoaccess);
-					// 获取链接原号数
-					System.out.println(((TagNode) resultNode).getAttribute("id"));
-					int result_num_from = Integer.parseInt(((TagNode) resultNode).getAttribute("id"));
-					result_link_struct.setLink_num_from(result_num_from);
 
-					System.out.println(resultNode.getText());
+				// 获取链接所在原页号
+				result_link_struct.setLink_page_from(Noofpagetoaccess);
+				// 获取链接原号数
+				System.out.println(((TagNode) resultNode).getAttribute("id"));
+				int result_num_from = Integer.parseInt(((TagNode) resultNode).getAttribute("id"));
+				result_link_struct.setLink_num_from(result_num_from);
+				System.out.println(resultNode.getText());
+				
+				if ((((TagNode) resultNode).getAttribute("class")).equals("result")) {
+					/* class="result"的正常情况 */
 
 					// 获取结果块的第一个tr结点 trNode 即有效内容的tr结点
 					NodeFilter trFilter = new TagNameFilter("tr");
@@ -363,8 +377,11 @@ public class Search_engine_process {
 					if (abstractNodeList.size() != 0) {
 						// 处理最简单的摘要模式 直接取第一个c-abstract结点
 						abstractNode = abstractNodeList.elementAt(0);
-						System.out.println("linkabstract = " + abstractNode.toPlainTextString());
-						result_link_struct.setLink_abstract(abstractNode.toPlainTextString());
+						String link_abstractString = abstractNode.toPlainTextString().replace("&ldquo;", "“")
+								.replace("&rdquo;", "”").replace("&middot;", "·").replace("&nbsp", " ")
+								.replace(" ", "").replace("	", "").replace("&quot;", "\"");
+						System.out.println("linkabstract = " + link_abstractString);
+						result_link_struct.setLink_abstract(link_abstractString);
 					} else {
 						// 处理各种非常规的摘要模式
 						System.out.println("sorry.非常规的摘要模式!");
@@ -374,6 +391,7 @@ public class Search_engine_process {
 				}else{
 					//处理class="result-op"的情况
 					//////////尚未完成
+					System.out.println("Not regular!");
 				}
 
 				/* 将该链接的信息块 顺序存入链接信息块队列中 */
@@ -391,9 +409,135 @@ public class Search_engine_process {
 	 * 对谷歌结果页面进行 各链接的标题 URL 摘要等信息进行抓取 的具体函数
 	 * @param parser 页面解析器
 	 * @param Noofpagetoaccess (int) 结果页面的页号(是对应链接的信息 用于存入信息块)
+	 * @throws Exception 
 	 */
-	public void extractLinks_google(Parser parser,int Noofpagetoaccess){
+	public void extractLinks_google(Parser parser,int Noofpagetoaccess) throws Exception{
+		/* 设定符合谷歌的结果链接块过滤方式 并由此对解析器的内容进行过滤 */
+		NodeFilter result_filter = new HasAttributeFilter("class", "g");
+		NodeList nodes = parser.extractAllNodesThatMatch(result_filter);
 		
+		System.out.println(nodes.size());
+		
+		
+
+		/* 对各个结果链接结点进行抓取过程 */
+		if (nodes != null) {
+			//////////尚未对结果数不是10个的情况做出处理
+			
+			
+			for (int i = 0; i < nodes.size(); ++i) {
+				// 创建一个结果链接存储结构
+				Result_Link_Struct result_link_struct = new Result_Link_Struct();
+
+				// 逐个取出符合条件的链接结点
+				Node resultNode = (Node) nodes.elementAt(i);
+				
+				
+				
+				
+				/////////////////////////////////////////////////////////
+				//测试其编码问题的部分临时代码
+//				String x = resultNode.toPlainTextString();
+//				System.out.println(x);
+//				byte[] xx = x.getBytes("gb2312");
+//				String xxx =new String(xx,"utf-8");
+//				System.out.println(xxx);
+//				System.out.println();
+
+				/////////////////////////////////////////////////////////
+				
+				
+				// 获取链接所在原页号
+				result_link_struct.setLink_page_from(Noofpagetoaccess);
+
+				System.out.println(resultNode.getText());
+
+				if (((TagNode) resultNode).getAttribute("id") == null) {
+					/* 正常情况 */
+					
+					/* 处理链接标题和链接URL(谷歌跳转URL) */
+					// 有效的真正链接结点(包含标题和URL信息的最精确的结点)
+					LinkTag effective_linktag = null;
+					// 用以存储主链接结点是否常规的标志位
+					boolean is_mainlink_regular = true;
+
+					// 对结果结点中有几个<h3 class="r">...</h3>这样的有效连接结点进行分类讨论
+					// mianklinkNode即是<h3 class="r">...</h3>结点
+					NodeFilter linkclass_r = new HasAttributeFilter("class", "r");
+					NodeList mainlinkNodeList = new NodeList();
+					resultNode.collectInto(mainlinkNodeList, linkclass_r);
+					Node mainlinkNode = null;
+					if (mainlinkNodeList.size() != 0) {
+						// 取第一个<h3 class="r">...</h3>
+						mainlinkNode = mainlinkNodeList.elementAt(0);
+
+						// 取出有效的真正链接结点effective_linktag
+						// 此处所做的改变是能保证取出的一定是linktag 故不会发生强制类型转换出错的问题
+						if (mainlinkNode.getFirstChild() instanceof LinkTag) {
+							// 常规情况 能在第一个<h3 class="r">...</h3>的第一个子结点中取出linktag
+							effective_linktag = (LinkTag) mainlinkNode.getFirstChild();
+						} else {
+							// 非常规情况 将是否常规的标志位置false 后转处理非常规的代码
+							is_mainlink_regular = false;
+						}
+					} else {
+						// 没有<h3 class="r">...</h3>的情况 为非常规主链接结点的情形
+						// 将is_mainlink_regular标志位设为非常规
+						is_mainlink_regular = false;
+					}
+
+					// 处理非常规的主链接结点的情形
+					//直接取结果结点中的第一个linktag
+					if (is_mainlink_regular == false) {
+						NodeFilter link_Filter = new NodeClassFilter(LinkTag.class);
+						NodeList linkList = new NodeList();
+						resultNode.collectInto(linkList, link_Filter);
+						System.out.println(linkList.size());
+						effective_linktag = (LinkTag) linkList.elementAt(0);
+					}
+
+					// 存储链接标题
+					result_link_struct.setLink_title(effective_linktag.getLinkText());
+					System.out.println("linktitle = " + effective_linktag.getLinkText());
+					// 存储链接URL(此处为谷歌跳转URL)
+					result_link_struct.setLink_url(effective_linktag.getLink());
+					System.out.println("linkurl = " + effective_linktag.getLink());
+
+					
+					/* 处理摘要 */
+					NodeFilter abstractclass_stFilter = new HasAttributeFilter("class", "st");
+					NodeList abstractNodeList = new NodeList();
+					resultNode.collectInto(abstractNodeList, abstractclass_stFilter);
+					Node abstractNode = null;
+					if (abstractNodeList.size() != 0) {
+						// 处理最简单的摘要模式 直接取第一个<span class="st">结点
+						abstractNode = abstractNodeList.elementAt(0);
+						String link_abstractString = abstractNode.toPlainTextString().replace("&ldquo;", "“")
+								.replace("&rdquo;", "”").replace("&middot;", "·").replace("&nbsp", " ")
+								.replace(" ", "").replace("	", "").replace("&quot;", "\"");
+						System.out.println("linkabstract = " + link_abstractString);
+
+						result_link_struct.setLink_abstract(link_abstractString);
+					} else {
+						// 处理各种非常规的摘要模式
+						System.out.println("sorry.非常规的摘要模式!");
+						//////////尚未完成
+
+					}
+				}else{
+					//处理非通常情况
+					//////////尚未完成
+					System.out.println("not regular!");
+				}
+
+				/* 将该链接的信息块 顺序存入链接信息块队列中 */
+				result_links.add_link(result_link_struct);
+				System.out.println("==========================================================");
+			}
+		}
+		
+		parser.reset();
+		return;
 	}
 	
 	public Link_queue getresult_links(){
