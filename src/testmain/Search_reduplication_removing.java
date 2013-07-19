@@ -19,8 +19,6 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 */
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-
 /*
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
@@ -39,9 +37,11 @@ import org.htmlparser.filters.*;
 import org.htmlparser.util.*;
 import org.htmlparser.tags.LinkTag;
 
+import crawl.Download;
 import crawl.Pages_analysis;
 import crawl.Search_engine_process;
 import crawl.Search_word_process;
+import crawl.Download;
 import datapackage.Link_queue;
 
 /**
@@ -55,13 +55,24 @@ public class Search_reduplication_removing {
 		//先调用Search_word_process类处理输入
 		Search_word_process searchword = null;
 		try {
-			searchword = new Search_word_process('G',"Search reduplication removing",1);
+			searchword = new Search_word_process('G',"人工智能",1);
 			searchword.handle_search_word_url();
 		} catch (Exception e) {
 			// TODO 自动生成的 catch 块
 			//////////应要求重新输入合法的数据
 			e.printStackTrace();
 		}
+		
+		
+		//////////////////////////////////////////////////////////
+		//处理google乱码问题的代码
+//		Download download = new Download();
+//		download.downloadFile(searchword.getsearch_url());
+//		String x = new String(download.getResponseBody(),"UTF-8");
+		
+		
+		//////////////////////////////////////////////////////////
+		
 			
 		//调用Search_engine_process类将结果页面中的有效信息抓取出来
 		Search_engine_process search_engine_process = new Search_engine_process();

@@ -1,5 +1,7 @@
 package crawl;
 
+import java.io.UnsupportedEncodingException;
+
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
@@ -243,8 +245,7 @@ public class Search_engine_process {
 //			Parser.getConnectionManager().setProxyPort(8118);
 			
 			parser.setURL(url);
-//			System.out.println(parser.getURL());
-			parser.setEncoding("utf-8");
+			
 			
 			/*
 			 * 对不同的基础搜索引擎所对应的结果页面
@@ -252,21 +253,20 @@ public class Search_engine_process {
 			 */
 			switch (search_mode) {
 			case 'B':// 百度
-				parser.setEncoding("utf-8");
+//				parser.setEncoding("utf-8");
+				System.out.println(parser.getEncoding());
 				extractLinks_baidu(parser, Noofpagetoaccess);
 				break;
 			case 'G':// 谷歌
+				
+				parser.setResource("D:\\College\\Innovation_projects\\eclipse workspace\\Search_reduplication_removing\\人工智能 - Google 搜索.htm");
+				System.out.println(parser.getURL());
+				parser.setEncoding("utf-8");
 				System.out.println(url);
 				
 				System.out.println(parser.getEncoding());
-//				NodeFilter result_filter = new HasAttributeFilter("class", "g");
-//				NodeList nodes = parser.extractAllNodesThatMatch(result_filter);
-//				for (int i = 0; i < nodes.size(); ++i) {
-//					Node resultNode = (Node) nodes.elementAt(i);
-//					String x = resultNode.toPlainTextString();
-//					System.out.println(x);
-//				}
 				
+//				extractLinks_google_test_encode(parser, Noofpagetoaccess);
 				
 				extractLinks_google(parser, Noofpagetoaccess);
 				break;
@@ -276,6 +276,7 @@ public class Search_engine_process {
 
 		} catch (ParserException e) {
 			e.printStackTrace();
+			
 			throw new Exception("Parser Exception!");
 		}
 		return;
@@ -294,6 +295,8 @@ public class Search_engine_process {
 		OrFilter result_filter = new OrFilter(result_filter_regu, result_filter_op);
 		NodeList nodes = parser.extractAllNodesThatMatch(result_filter);
 
+		System.out.println(parser.getEncoding());
+		
 		/* 对各个结果链接结点进行抓取过程 */
 		if (nodes != null) {
 			for (int i = 0; i < nodes.size(); ++i) {
@@ -405,6 +408,24 @@ public class Search_engine_process {
 		return;
 	}
 	
+	public void extractLinks_google_test_encode(Parser parser,int Noofpagetoaccess) throws  UnsupportedEncodingException{
+		System.out.println(parser.getEncoding());
+		//parser.setEncoding("UTF-8");
+		NodeList testencodeList = null;
+		try {
+			testencodeList = parser.parse(null);
+		} catch (ParserException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+		System.out.println(parser.getEncoding());
+		Node testencodeNode = testencodeList.elementAt(1);
+		String xString = testencodeNode.toPlainTextString();
+		String xxxString =new String(xString.getBytes("utf-8"), "gb18030") ;
+		System.out.println(xString);
+		System.out.println(xxxString);
+	}
+	
 	/**
 	 * 对谷歌结果页面进行 各链接的标题 URL 摘要等信息进行抓取 的具体函数
 	 * @param parser 页面解析器
@@ -423,7 +444,13 @@ public class Search_engine_process {
 		/* 对各个结果链接结点进行抓取过程 */
 		if (nodes != null) {
 			//////////尚未对结果数不是10个的情况做出处理
-			
+			/* 经过测试发现 结果数不是10个是由于
+			 * google保证非新闻图片等谷歌自带的链接数为默认一页10个
+			 * 如果有新闻集锦或图片集锦就会超过10个
+			 * 故纯<li class="g">的是10个
+			 * 多出的是<li class="g" id="newsbox"> 
+			 * 或者是<li class="g" id="imagebox_bigimages"> 这样的
+			 */
 			
 			for (int i = 0; i < nodes.size(); ++i) {
 				// 创建一个结果链接存储结构
@@ -436,11 +463,12 @@ public class Search_engine_process {
 				
 				
 				/////////////////////////////////////////////////////////
-				//测试其编码问题的部分临时代码
+//				//测试其编码问题的部分临时代码
+				System.out.println(parser.getEncoding());
 //				String x = resultNode.toPlainTextString();
 //				System.out.println(x);
-//				byte[] xx = x.getBytes("gb2312");
-//				String xxx =new String(xx,"utf-8");
+//				byte[] xx = x.getBytes("utf-8");
+//				String xxx =new String(xx,"ISO-8859-1");
 //				System.out.println(xxx);
 //				System.out.println();
 

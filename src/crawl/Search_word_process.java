@@ -81,7 +81,7 @@ public class Search_word_process {
 			case 'G':
 				// 谷歌
 				search_url = "http://www.google.com.hk/search?q="
-						+ java.net.URLEncoder.encode(search_word, "utf-8")
+						+ java.net.URLEncoder.encode(search_word, "gbk")
 						+ "&start=" + (Noofpagetoaccess-1) + "0";
 				break;
 			default:
