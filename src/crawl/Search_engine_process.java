@@ -22,9 +22,9 @@ import datapackage.Link_queue;
  * 将各个结果链接的标题 URL 摘要等信息 抓取到相应的链接信息块队列中
  * 
  * @author Daniel
- * @version 1.2 对搜索引擎结果页面的抓取过程进行优化减少异常发生的状况<br/>
+ * @version 1.3 对搜索引擎结果页面的抓取过程进行优化减少异常发生的状况<br/>
  * 已知bug：<br/>
- * 不稳定 时常会Connection reset 抓取出的结果与直接用浏览器访问URL不完全相同
+ * 不稳定 时常会Connection reset 
  */
 public class Search_engine_process {
 	//////////如何处理Search_engine_process类和Pages_analysis类对result_links链表的共同使用问题
@@ -232,9 +232,10 @@ public class Search_engine_process {
 	/**
 	 * 分类对不同搜索引擎的结果页面进行 各链接信息进行抓取 的函数<br/>
 	 * 包括对解析器的一些设置操作
-	 * @version 1.1 对抓取过程进行优化<br/>
+	 * @version 1.2 对抓取过程进行优化<br/> 
+	 * 修复谷歌抓取出的结果与直接用浏览器访问URL不完全相同的BUG<br/>
 	 * 已知bug：<br/> 
-	 * 不稳定 时常会Connection reset  抓取出的结果与直接用浏览器访问URL不完全相同
+	 * 不稳定 时常会Connection reset  
 	 * @param url (String) 将要被抓取的搜索结果页面的URL
 	 * @param search_mode (char) 基础搜索引擎代码
 	 * @param Noofpagetoaccess (int) 结果页面的页号(是对应链接的信息 用于存入信息块)
@@ -401,7 +402,7 @@ public class Search_engine_process {
 	/**
 	 * 对谷歌结果页面进行 各链接的标题 URL 摘要等信息进行抓取 的具体函数<br/>
 	 * 已知bug：<br/> 
-	 * 不稳定 时常会Connection reset  抓取出的结果与直接用浏览器访问URL不完全相同
+	 * 不稳定 时常会Connection reset
 	 * @param parser 页面解析器
 	 * @param Noofpagetoaccess (int) 结果页面的页号(是对应链接的信息 用于存入信息块)
 	 * @throws Exception 
@@ -475,10 +476,17 @@ public class Search_engine_process {
 					// 存储链接标题
 					result_link_struct.setLink_title(effective_linktag.getLinkText());
 //					System.out.println("linktitle = " + effective_linktag.getLinkText());
+					
+					//对谷歌跳转URL做处理 处理为实际的URL
+					String link_url = effective_linktag.getLink();
+					if(link_url.startsWith("http://www.google.com.hk/url?q=http://")){
+						link_url = link_url.substring(31);
+						link_url = link_url.substring(0,link_url.indexOf("&amp;"));
+					}
+					
 					// 存储链接URL(此处为谷歌跳转URL)
-					result_link_struct.setLink_url(effective_linktag.getLink());
-//					System.out.println("linkurl = " + effective_linktag.getLink());
-
+					result_link_struct.setLink_url(link_url);
+					// System.out.println("linkurl = " + effective_linktag.getLink());
 					
 					/* 处理摘要 */
 					NodeFilter abstractclass_stFilter = new HasAttributeFilter("class", "st");

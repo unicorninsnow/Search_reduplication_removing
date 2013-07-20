@@ -55,7 +55,7 @@ public class Search_reduplication_removing {
 		//先调用Search_word_process类处理输入
 		Search_word_process searchword = null;
 		try {
-			searchword = new Search_word_process('B',"数据挖掘与金融",1);
+			searchword = new Search_word_process('G',"金融 数据挖掘",1);
 			searchword.handle_search_word_url();
 		} catch (Exception e) {
 			// TODO 自动生成的 catch 块

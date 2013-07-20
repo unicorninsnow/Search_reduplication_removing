@@ -101,7 +101,7 @@ public class Page_thread implements Runnable {
 				parser.reset();
 				
 				// 进行标题更新
-				update_title(parser, title_filter);
+//				update_title(parser, title_filter);
 				// 进行正文抓取
 				get_mainbody(parser, mainbody_filter);
 			}
