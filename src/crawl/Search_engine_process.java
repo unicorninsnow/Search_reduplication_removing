@@ -1,7 +1,5 @@
 package crawl;
 
-import java.io.UnsupportedEncodingException;
-
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
@@ -15,7 +13,6 @@ import org.htmlparser.nodes.TagNode;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
-import org.htmlparser.visitors.NodeVisitor;
 
 import datapackage.Result_Link_Struct;
 import datapackage.Link_queue;
@@ -23,8 +20,11 @@ import datapackage.Link_queue;
 /**
  * 该类为分析搜索结果页面的类<br/>
  * 将各个结果链接的标题 URL 摘要等信息 抓取到相应的链接信息块队列中
+ * 
  * @author Daniel
- * @version 1.1
+ * @version 1.2 对搜索引擎结果页面的抓取过程进行优化减少异常发生的状况<br/>
+ * 已知bug：<br/>
+ * 不稳定 时常会Connection reset 抓取出的结果与直接用浏览器访问URL不完全相同
  */
 public class Search_engine_process {
 	//////////如何处理Search_engine_process类和Pages_analysis类对result_links链表的共同使用问题
@@ -32,13 +32,15 @@ public class Search_engine_process {
 	Link_queue result_links = new Link_queue();
 	
 	/**
-	 * 对结果页面进行 各链接的标题 URL 摘要等信息进行抓取 的具体函数
+	 * 已过期不建议使用<br/>
+	 * 对结果页面进行 各链接的标题 URL 摘要等信息进行抓取 的具体函数<br/>
+	 * @version 1.0 能初步完成抓取任务 但百度部分异常较多 谷歌还未全部完成 未测试
 	 * @param url (String) 将要被抓取的搜索结果页面的URL
 	 * @param search_mode (char) 基础搜索引擎代码
 	 * @param Noofpagetoaccess (int) 结果页面的页号(是对应链接的信息 用于存入信息块)
 	 * @throws Exception 抓取过程异常 主要是parser异常
 	 */
-	public void extractLinks(String url,char search_mode,int Noofpagetoaccess) throws Exception {
+	@Deprecated public void extractLinks_old(String url,char search_mode,int Noofpagetoaccess) throws Exception {
 		try {
 			Parser parser = new Parser();
 			
@@ -228,46 +230,34 @@ public class Search_engine_process {
 	}
 
 	/**
-	 * 测试用 现仅测试百度<br/> 
 	 * 分类对不同搜索引擎的结果页面进行 各链接信息进行抓取 的函数<br/>
 	 * 包括对解析器的一些设置操作
+	 * @version 1.1 对抓取过程进行优化<br/>
+	 * 已知bug：<br/> 
+	 * 不稳定 时常会Connection reset  抓取出的结果与直接用浏览器访问URL不完全相同
 	 * @param url (String) 将要被抓取的搜索结果页面的URL
 	 * @param search_mode (char) 基础搜索引擎代码
 	 * @param Noofpagetoaccess (int) 结果页面的页号(是对应链接的信息 用于存入信息块)
 	 * @throws Exception 抓取过程异常 主要是parser异常
 	 */
-	public void test_extractLinks(String url,char search_mode,int Noofpagetoaccess) throws Exception {
+	public void extractLinks(String url, char search_mode, int Noofpagetoaccess) throws Exception {
 		try {
 			Parser parser = new Parser();
-
-			/*代理设置 用于解决国内网络有时被墙的情况*/
-//			Parser.getConnectionManager().setProxyHost("127.0.0.1");
-//			Parser.getConnectionManager().setProxyPort(8118);
-			
 			parser.setURL(url);
-			
-			
+
 			/*
-			 * 对不同的基础搜索引擎所对应的结果页面
-			 * 分情况进行信息抓取
+			 * 对不同的基础搜索引擎所对应的结果页面 分情况进行信息抓取
 			 */
 			switch (search_mode) {
 			case 'B':// 百度
-//				parser.setEncoding("utf-8");
-				System.out.println(parser.getEncoding());
+//				System.out.println(parser.getEncoding());
 				extractLinks_baidu(parser, Noofpagetoaccess);
 				break;
 			case 'G':// 谷歌
-				
-				parser.setResource("D:\\College\\Innovation_projects\\eclipse workspace\\Search_reduplication_removing\\人工智能 - Google 搜索.htm");
-				System.out.println(parser.getURL());
-				parser.setEncoding("utf-8");
-				System.out.println(url);
-				
-				System.out.println(parser.getEncoding());
-				
-//				extractLinks_google_test_encode(parser, Noofpagetoaccess);
-				
+				// 代理设置 用于解决国内网络有时被墙的情况
+				// Parser.getConnectionManager().setProxyHost("127.0.0.1");
+				// Parser.getConnectionManager().setProxyPort(8118);
+
 				extractLinks_google(parser, Noofpagetoaccess);
 				break;
 			default:
@@ -276,7 +266,7 @@ public class Search_engine_process {
 
 		} catch (ParserException e) {
 			e.printStackTrace();
-			
+
 			throw new Exception("Parser Exception!");
 		}
 		return;
@@ -295,7 +285,6 @@ public class Search_engine_process {
 		OrFilter result_filter = new OrFilter(result_filter_regu, result_filter_op);
 		NodeList nodes = parser.extractAllNodesThatMatch(result_filter);
 
-		System.out.println(parser.getEncoding());
 		
 		/* 对各个结果链接结点进行抓取过程 */
 		if (nodes != null) {
@@ -309,10 +298,10 @@ public class Search_engine_process {
 				// 获取链接所在原页号
 				result_link_struct.setLink_page_from(Noofpagetoaccess);
 				// 获取链接原号数
-				System.out.println(((TagNode) resultNode).getAttribute("id"));
+//				System.out.println(((TagNode) resultNode).getAttribute("id"));
 				int result_num_from = Integer.parseInt(((TagNode) resultNode).getAttribute("id"));
 				result_link_struct.setLink_num_from(result_num_from);
-				System.out.println(resultNode.getText());
+//				System.out.println(resultNode.getText());
 				
 				if ((((TagNode) resultNode).getAttribute("class")).equals("result")) {
 					/* class="result"的正常情况 */
@@ -361,16 +350,15 @@ public class Search_engine_process {
 						NodeFilter link_Filter = new NodeClassFilter(LinkTag.class);
 						NodeList linkList = new NodeList();
 						trNode.collectInto(linkList, link_Filter);
-						System.out.println(linkList.size());
 						effective_linktag = (LinkTag) linkList.elementAt(0);
 					}
 
 					// 存储链接标题
 					result_link_struct.setLink_title(effective_linktag.getLinkText());
-					System.out.println("linktitle = " + effective_linktag.getLinkText());
+//					System.out.println("linktitle = " + effective_linktag.getLinkText());
 					// 存储链接URL(此处为百度跳转URL)
 					result_link_struct.setLink_url(effective_linktag.getLink());
-					System.out.println("linkurl = " + effective_linktag.getLink());
+//					System.out.println("linkurl = " + effective_linktag.getLink());
 
 					/* 处理摘要 */
 					NodeFilter cabstractFilter = new HasAttributeFilter("class", "c-abstract");
@@ -380,26 +368,28 @@ public class Search_engine_process {
 					if (abstractNodeList.size() != 0) {
 						// 处理最简单的摘要模式 直接取第一个c-abstract结点
 						abstractNode = abstractNodeList.elementAt(0);
+						// 对摘要中可能出现的一些html转义字符作替换
 						String link_abstractString = abstractNode.toPlainTextString().replace("&ldquo;", "“")
 								.replace("&rdquo;", "”").replace("&middot;", "·").replace("&nbsp", " ")
 								.replace(" ", "").replace("	", "").replace("&quot;", "\"");
-						System.out.println("linkabstract = " + link_abstractString);
+//						System.out.println("linkabstract = " + link_abstractString);
 						result_link_struct.setLink_abstract(link_abstractString);
 					} else {
 						// 处理各种非常规的摘要模式
-						System.out.println("sorry.非常规的摘要模式!");
-						// ////////尚未完成
+						System.out.println("sorry. 第" + result_num_from + "个链接为非常规的摘要模式!");
+						//////////尚未完成
+						//////////如<font size="-1">的情形还未处理
 
 					}
 				}else{
 					//处理class="result-op"的情况
 					//////////尚未完成
-					System.out.println("Not regular!");
+					System.out.println("Not regular! 第" + result_num_from + "个链接为<class=\"result-op\">型");
 				}
 
 				/* 将该链接的信息块 顺序存入链接信息块队列中 */
 				result_links.add_link(result_link_struct);
-				System.out.println("==========================================================");
+//				System.out.println("==========================================================");
 			}
 		}
 		
@@ -407,27 +397,11 @@ public class Search_engine_process {
 		parser.reset();
 		return;
 	}
-	
-	public void extractLinks_google_test_encode(Parser parser,int Noofpagetoaccess) throws  UnsupportedEncodingException{
-		System.out.println(parser.getEncoding());
-		//parser.setEncoding("UTF-8");
-		NodeList testencodeList = null;
-		try {
-			testencodeList = parser.parse(null);
-		} catch (ParserException e) {
-			// TODO 自动生成的 catch 块
-			e.printStackTrace();
-		}
-		System.out.println(parser.getEncoding());
-		Node testencodeNode = testencodeList.elementAt(1);
-		String xString = testencodeNode.toPlainTextString();
-		String xxxString =new String(xString.getBytes("utf-8"), "gb18030") ;
-		System.out.println(xString);
-		System.out.println(xxxString);
-	}
-	
+
 	/**
-	 * 对谷歌结果页面进行 各链接的标题 URL 摘要等信息进行抓取 的具体函数
+	 * 对谷歌结果页面进行 各链接的标题 URL 摘要等信息进行抓取 的具体函数<br/>
+	 * 已知bug：<br/> 
+	 * 不稳定 时常会Connection reset  抓取出的结果与直接用浏览器访问URL不完全相同
 	 * @param parser 页面解析器
 	 * @param Noofpagetoaccess (int) 结果页面的页号(是对应链接的信息 用于存入信息块)
 	 * @throws Exception 
@@ -437,51 +411,26 @@ public class Search_engine_process {
 		NodeFilter result_filter = new HasAttributeFilter("class", "g");
 		NodeList nodes = parser.extractAllNodesThatMatch(result_filter);
 		
-		System.out.println(nodes.size());
-		
-		
-
 		/* 对各个结果链接结点进行抓取过程 */
 		if (nodes != null) {
-			//////////尚未对结果数不是10个的情况做出处理
-			/* 经过测试发现 结果数不是10个是由于
-			 * google保证非新闻图片等谷歌自带的链接数为默认一页10个
-			 * 如果有新闻集锦或图片集锦就会超过10个
-			 * 故纯<li class="g">的是10个
-			 * 多出的是<li class="g" id="newsbox"> 
-			 * 或者是<li class="g" id="imagebox_bigimages"> 这样的
-			 */
-			
 			for (int i = 0; i < nodes.size(); ++i) {
-				// 创建一个结果链接存储结构
-				Result_Link_Struct result_link_struct = new Result_Link_Struct();
-
 				// 逐个取出符合条件的链接结点
 				Node resultNode = (Node) nodes.elementAt(i);
 				
-				
-				
-				
-				/////////////////////////////////////////////////////////
-//				//测试其编码问题的部分临时代码
-				System.out.println(parser.getEncoding());
-//				String x = resultNode.toPlainTextString();
-//				System.out.println(x);
-//				byte[] xx = x.getBytes("utf-8");
-//				String xxx =new String(xx,"ISO-8859-1");
-//				System.out.println(xxx);
-//				System.out.println();
-
-				/////////////////////////////////////////////////////////
-				
-				
-				// 获取链接所在原页号
-				result_link_struct.setLink_page_from(Noofpagetoaccess);
-
-				System.out.println(resultNode.getText());
-
 				if (((TagNode) resultNode).getAttribute("id") == null) {
-					/* 正常情况 */
+					/*
+					 * 正常情况 即纯<li class="g">的结点 其总个数应为一页10个
+					 * 在正常情况中是不考虑新闻和图片这样的结点的 
+					 * 如<li class="g" id="newsbox"> 或者是
+					 * <li class="g" id="imagebox_bigimages"> 这样的结点不在正常情况中
+					 */
+
+					// 创建一个结果链接存储结构
+					Result_Link_Struct result_link_struct = new Result_Link_Struct();
+
+					// 获取链接所在原页号
+					result_link_struct.setLink_page_from(Noofpagetoaccess);
+
 					
 					/* 处理链接标题和链接URL(谷歌跳转URL) */
 					// 有效的真正链接结点(包含标题和URL信息的最精确的结点)
@@ -520,16 +469,15 @@ public class Search_engine_process {
 						NodeFilter link_Filter = new NodeClassFilter(LinkTag.class);
 						NodeList linkList = new NodeList();
 						resultNode.collectInto(linkList, link_Filter);
-						System.out.println(linkList.size());
 						effective_linktag = (LinkTag) linkList.elementAt(0);
 					}
 
 					// 存储链接标题
 					result_link_struct.setLink_title(effective_linktag.getLinkText());
-					System.out.println("linktitle = " + effective_linktag.getLinkText());
+//					System.out.println("linktitle = " + effective_linktag.getLinkText());
 					// 存储链接URL(此处为谷歌跳转URL)
 					result_link_struct.setLink_url(effective_linktag.getLink());
-					System.out.println("linkurl = " + effective_linktag.getLink());
+//					System.out.println("linkurl = " + effective_linktag.getLink());
 
 					
 					/* 处理摘要 */
@@ -543,24 +491,31 @@ public class Search_engine_process {
 						String link_abstractString = abstractNode.toPlainTextString().replace("&ldquo;", "“")
 								.replace("&rdquo;", "”").replace("&middot;", "·").replace("&nbsp", " ")
 								.replace(" ", "").replace("	", "").replace("&quot;", "\"");
-						System.out.println("linkabstract = " + link_abstractString);
-
+//						System.out.println("linkabstract = " + link_abstractString);
 						result_link_struct.setLink_abstract(link_abstractString);
 					} else {
 						// 处理各种非常规的摘要模式
-						System.out.println("sorry.非常规的摘要模式!");
+						System.out.println("sorry. 第" + i + "个链接为非常规的摘要模式!");
 						//////////尚未完成
 
 					}
+					
+					/* 将该链接的信息块 顺序存入链接信息块队列中 */
+					//目前设计为正常<li class="g">的结点才存入链接信息块队列
+					result_links.add_link(result_link_struct);
 				}else{
-					//处理非通常情况
+					/* 非通常情况
+					 * 主要是google新闻和图片之类的集合链接
+					 * 其不算在每页的10个搜索结果之中
+					 * 故当存在新闻和图片集合链接时 nodes.size() > 10
+					 * 该情况主要是类似这样的结点：
+					 * <li class="g" id="newsbox"> 或  <li class="g" id="imagebox_bigimages"> 
+					 */
 					//////////尚未完成
 					System.out.println("not regular!");
 				}
-
-				/* 将该链接的信息块 顺序存入链接信息块队列中 */
-				result_links.add_link(result_link_struct);
-				System.out.println("==========================================================");
+				
+//				System.out.println("==========================================================");
 			}
 		}
 		
