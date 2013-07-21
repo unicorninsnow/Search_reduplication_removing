@@ -3,7 +3,11 @@ package crawl;
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
+import org.htmlparser.filters.NodeClassFilter;
 import org.htmlparser.filters.TagNameFilter;
+import org.htmlparser.nodes.TextNode;
+import org.htmlparser.tags.ScriptTag;
+import org.htmlparser.tags.StyleTag;
 import org.htmlparser.util.EncodingChangeException;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
@@ -63,8 +67,8 @@ public class Page_thread implements Runnable {
 	 */
 	public void crawl_page() throws Exception {
 		
-		// System.out.println(page_to_analyze.getLink_title());
-		// System.out.println(page_to_analyze.getLink_url());
+//		 System.out.println(page_to_analyze.getLink_title());
+//		 System.out.println(page_to_analyze.getLink_url());
 		try {
 			Parser parser = new Parser(page_to_analyze.getLink_url());
 			
@@ -77,8 +81,7 @@ public class Page_thread implements Runnable {
 			
 			// 设定标题过滤器
 			NodeFilter title_filter = new TagNameFilter("title");
-			// 设定正文过滤器
-			NodeFilter mainbody_filter = new TagNameFilter("p");
+			
 			/*
 			 * NodeFilter mainbody_filter_p = new TagNameFilter("p"); NodeFilter
 			 * mainbody_filter_article = new HasAttributeFilter("class",
@@ -88,9 +91,10 @@ public class Page_thread implements Runnable {
 			
 			try {
 				// 进行标题更新
-				update_title(parser, title_filter);
+//				update_title(parser, title_filter);
 				// 进行正文抓取
-				get_mainbody(parser, mainbody_filter);
+//				get_mainbody(parser);
+				get_mainbody_test(parser);
 				
 			} catch (EncodingChangeException e) {
 				/* 对编码有问题的链接进行编码修复并进行第二次抓取 */
@@ -103,7 +107,8 @@ public class Page_thread implements Runnable {
 				// 进行标题更新
 //				update_title(parser, title_filter);
 				// 进行正文抓取
-				get_mainbody(parser, mainbody_filter);
+//				get_mainbody(parser);
+				get_mainbody_test(parser);
 			}
 		} catch (ParserException e) {
 			e.printStackTrace();
@@ -111,6 +116,68 @@ public class Page_thread implements Runnable {
 		return;
 	}
 
+	/**
+	 * 测试用  实际进行正文抓取的核心函数
+	 * @version 1.1 TextNode标签法
+	 * @param parser 该链接的解析器
+	 * @param mainbody_filter 页面正文的过滤方式
+	 * @param mainbody_analyzed 存放正文的字符串
+	 * @throws ParserException 解析器的异常
+	 * @throws Exception 正文为空异常
+	 */
+	public void get_mainbody_test(Parser parser) throws ParserException, Exception {
+		NodeFilter bodyFilter = new TagNameFilter("body");
+		NodeList bodys = parser.extractAllNodesThatMatch(bodyFilter);
+		if(bodys.size() != 1)	throw new Exception("no body node!");
+		Node body = bodys.elementAt(0);
+		
+		
+		NodeFilter mainbody_filter = new NodeClassFilter(TextNode.class);
+		NodeList main_body = new NodeList();
+		body.collectInto(main_body, mainbody_filter);
+		
+		String mainbody_analyzed = "";
+		
+		// 对 通过该过滤方式无法获取任何正文结点 的情况 抛出空正文异常
+		if (main_body == null)
+			throw new Exception("Main body is null!");
+
+		for (int i = 0; i < main_body.size(); ++i) {
+			
+			Node mainbody_text = (Node) main_body.elementAt(i);
+			
+			if((mainbody_text.getParent() instanceof ScriptTag) || (mainbody_text.getParent() instanceof StyleTag)) continue;
+//			System.out.println(mainbody_text.getText());
+//			System.out.println(mainbody_text.getParent().getClass().getName());
+//			System.out.println(mainbody_text.getParent().getText());
+//			System.out.println(mainbody_text.getParent().getParent().getClass().getName());
+			
+			
+			String temptext = mainbody_text.toPlainTextString();
+			//替换一些HTML的转义字符
+			temptext = temptext.replace("&ldquo;", "“").replace("&rdquo;", "”")
+					.replace("&middot;", "·").replace("&nbsp;", " ")
+					.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;","&").replace("&copy;","©" )
+					.replace("&quot;", "\"");
+			
+//			System.out.println(temptext);
+			temptext = temptext.replace('n', 's').replace(" ", "").replace("	", "");
+			
+				mainbody_analyzed = mainbody_analyzed + temptext + "\n";
+//			 System.out.println("=================paragraph=============");
+		}
+		 System.out.println(mainbody_analyzed);
+		 System.out.println("=================one page is finished.==================");
+
+		// 将正文内容 存入链接信息块
+		page_to_analyze.setLink_text(mainbody_analyzed);
+		
+		// 对解析器进行重置 以便后续使用parser进行解析不会出错
+		parser.reset();
+		return;
+	}
+	
+	
 	/**
 	 * 实际进行正文抓取的核心函数
 	 * @version 1.0 连续纯文本阈值法
@@ -120,7 +187,10 @@ public class Page_thread implements Runnable {
 	 * @throws ParserException 解析器的异常
 	 * @throws Exception 正文为空异常
 	 */
-	public void get_mainbody(Parser parser, NodeFilter mainbody_filter) throws ParserException, Exception {
+	public void get_mainbody(Parser parser) throws ParserException, Exception {
+		// 设定正文过滤器
+		NodeFilter mainbody_filter = new TagNameFilter("p");
+		
 		String mainbody_analyzed = "";
 		NodeList main_body = parser.extractAllNodesThatMatch(mainbody_filter);
 		// 对 通过该过滤方式无法获取任何正文结点 的情况 抛出空正文异常
@@ -131,7 +201,7 @@ public class Page_thread implements Runnable {
 			Node mainbody_text = (Node) main_body.elementAt(i);
 			String temptext = mainbody_text.toPlainTextString()
 					.replace("&ldquo;", "“").replace("&rdquo;", "”")
-					.replace("&middot;", "·").replace("&nbsp", " ")
+					.replace("&middot;", "·").replace("&nbsp;", " ")
 					.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;","&")
 					.replace("&quot;", "\"").replace(" ", "").replace("	", "");
 			if (temptext.length() > text_para_threshold) {

@@ -307,7 +307,8 @@ public class Search_engine_process {
 				result_link_struct.setLink_num_from(result_num_from);
 //				System.out.println(resultNode.getText());
 				
-				if ((((TagNode) resultNode).getAttribute("class")).equals("result")) {
+//				if ((((TagNode) resultNode).getAttribute("class")).equals("result")) {
+				if(true){
 					/* class="result"的正常情况 */
 
 					// 获取结果块的第一个tr结点 trNode 即有效内容的tr结点
@@ -426,10 +427,10 @@ public class Search_engine_process {
 					
 					/* 至此完成百度在正常情况(即<table class="result">情形)下的抓取 */
 					
-				}else{
-					//处理class="result-op"的情况
-					//////////尚未完成
-					System.out.println("Not regular! 第" + result_num_from + "个链接为<class=\"result-op\">型");
+//				}else{
+//					//处理class="result-op"的情况
+//					//////////尚未完成
+//					System.out.println("Not regular! 第" + result_num_from + "个链接为<class=\"result-op\">型");
 				}
 
 				/* 将该链接的信息块 顺序存入链接信息块队列中 */
@@ -541,7 +542,7 @@ public class Search_engine_process {
 						// 处理最简单的摘要模式 直接取第一个<span class="st">结点
 						abstractNode = abstractNodeList.elementAt(0);
 						String link_abstractString = abstractNode.toPlainTextString().replace("&ldquo;", "“")
-								.replace("&rdquo;", "”").replace("&middot;", "·").replace("&nbsp", " ")
+								.replace("&rdquo;", "”").replace("&middot;", "·").replace("&nbsp;", " ")
 								.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;","&")
 								.replace("&quot;", "\"").replace(" ", "").replace("	", "");
 //						System.out.println("linkabstract = " + link_abstractString);
