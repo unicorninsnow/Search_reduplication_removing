@@ -132,7 +132,8 @@ public class Page_thread implements Runnable {
 			String temptext = mainbody_text.toPlainTextString()
 					.replace("&ldquo;", "“").replace("&rdquo;", "”")
 					.replace("&middot;", "·").replace("&nbsp", " ")
-					.replace(" ", "").replace("	", "");
+					.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;","&")
+					.replace("&quot;", "\"").replace(" ", "").replace("	", "");
 			if (temptext.length() > text_para_threshold) {
 				mainbody_analyzed = mainbody_analyzed + temptext + "\n";
 				// System.out.println(temptext);

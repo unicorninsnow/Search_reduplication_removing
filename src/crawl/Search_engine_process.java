@@ -11,6 +11,8 @@ import org.htmlparser.filters.OrFilter;
 import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.nodes.TagNode;
 import org.htmlparser.tags.LinkTag;
+import org.htmlparser.tags.ParagraphTag;
+import org.htmlparser.tags.Span;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 
@@ -22,9 +24,9 @@ import datapackage.Link_queue;
  * 将各个结果链接的标题 URL 摘要等信息 抓取到相应的链接信息块队列中
  * 
  * @author Daniel
- * @version 1.3 对搜索引擎结果页面的抓取过程进行优化减少异常发生的状况<br/>
+ * @version 1.1.4 对搜索引擎结果页面的抓取过程进行优化减少异常发生的状况<br/>
  * 已知bug：<br/>
- * 不稳定 时常会Connection reset 
+ * 谷歌抓取不稳定 时常会Connection reset 
  */
 public class Search_engine_process {
 	//////////如何处理Search_engine_process类和Pages_analysis类对result_links链表的共同使用问题
@@ -232,10 +234,10 @@ public class Search_engine_process {
 	/**
 	 * 分类对不同搜索引擎的结果页面进行 各链接信息进行抓取 的函数<br/>
 	 * 包括对解析器的一些设置操作
-	 * @version 1.2 对抓取过程进行优化<br/> 
-	 * 修复谷歌抓取出的结果与直接用浏览器访问URL不完全相同的BUG<br/>
+	 * @version 1.3 对抓取过程进行优化<br/> 
+	 * 增加对<font size="-1">类型摘要的支持<br/>
 	 * 已知bug：<br/> 
-	 * 不稳定 时常会Connection reset  
+	 * 谷歌抓取不稳定 时常会Connection reset  
 	 * @param url (String) 将要被抓取的搜索结果页面的URL
 	 * @param search_mode (char) 基础搜索引擎代码
 	 * @param Noofpagetoaccess (int) 结果页面的页号(是对应链接的信息 用于存入信息块)
@@ -275,6 +277,7 @@ public class Search_engine_process {
 	
 	/**
 	 * 对百度结果页面进行 各链接的标题 URL 摘要等信息进行抓取 的具体函数
+	 * @version 1.1 增加对<font size="-1">类型摘要的支持
 	 * @param parser 页面解析器
 	 * @param Noofpagetoaccess (int) 结果页面的页号(是对应链接的信息 用于存入信息块)
 	 * @throws Exception
@@ -366,22 +369,63 @@ public class Search_engine_process {
 					NodeList abstractNodeList = new NodeList();
 					trNode.collectInto(abstractNodeList, cabstractFilter);
 					Node abstractNode = null;
+					String link_abstractString;
 					if (abstractNodeList.size() != 0) {
 						// 处理最简单的摘要模式 直接取第一个c-abstract结点
 						abstractNode = abstractNodeList.elementAt(0);
 						// 对摘要中可能出现的一些html转义字符作替换
-						String link_abstractString = abstractNode.toPlainTextString().replace("&ldquo;", "“")
-								.replace("&rdquo;", "”").replace("&middot;", "·").replace("&nbsp", " ")
-								.replace(" ", "").replace("	", "").replace("&quot;", "\"");
+						link_abstractString = abstractNode.toPlainTextString().replace("&ldquo;", "“")
+								.replace("&rdquo;", "”").replace("&middot;", "·").replace("&nbsp;", " ")
+								.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;","&")
+								.replace("&quot;", "\"").replace(" ", "").replace("	", "");
 //						System.out.println("linkabstract = " + link_abstractString);
-						result_link_struct.setLink_abstract(link_abstractString);
 					} else {
 						// 处理各种非常规的摘要模式
-						System.out.println("sorry. 第" + result_num_from + "个链接为非常规的摘要模式!");
+//						System.out.println("sorry. 第" + result_num_from + "个链接为非常规的摘要模式!");
 						//////////尚未完成
-						//////////如<font size="-1">的情形还未处理
-
+						
+						//处理<font size="-1">
+						NodeFilter fontsize_Filter = new HasAttributeFilter("size","-1");
+						NodeList fontsizeList = new NodeList();
+						trNode.collectInto(fontsizeList, fontsize_Filter);
+						link_abstractString = "";
+						if(fontsizeList.size() != 0){
+							//最好取出纯的<font size="-1">结点
+							int k = 0;
+							while(k < fontsizeList.size()){
+								if(((TagNode)fontsizeList.elementAt(k)).getAttribute("class") == null){
+									abstractNode = fontsizeList.elementAt(k);
+									break;
+								}
+								++k;
+							}
+							if (k >= fontsizeList.size()) abstractNode = fontsizeList.elementAt(0);
+							
+							//从fontsize中取摘要结点
+							Node p = abstractNode.getNextSibling();
+							for(; (!p.getText().equals("/font")); p = p.getNextSibling()){
+								//将不需要的结点滤去 
+								//////////这里没能将百度快照之前的-去除
+								if((p instanceof Span) || (p instanceof ParagraphTag) || (p instanceof LinkTag))		continue;
+								//将有效的摘要存入摘要字符串
+								link_abstractString = link_abstractString.concat(p.toPlainTextString());
+							}
+							//对摘要字符串做一些HTML转义字符的替换
+							link_abstractString = link_abstractString.replace("&ldquo;", "“")
+									.replace("&rdquo;", "”").replace("&middot;", "·").replace("&nbsp;", " ")
+									.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;","&")
+									.replace("&quot;", "\"").replace(" ", "").replace("	", "");
+//							System.out.println("非常规的摘要：" + link_abstractString);
+						}else{
+							//处理非正常情况的摘要且摘要不在<font size="-1">中情形
+							//////////尚未完成 尚未发现该情况的具体实例
+						}
+						
 					}
+					result_link_struct.setLink_abstract(link_abstractString);
+					
+					/* 至此完成百度在正常情况(即<table class="result">情形)下的抓取 */
+					
 				}else{
 					//处理class="result-op"的情况
 					//////////尚未完成
@@ -498,7 +542,8 @@ public class Search_engine_process {
 						abstractNode = abstractNodeList.elementAt(0);
 						String link_abstractString = abstractNode.toPlainTextString().replace("&ldquo;", "“")
 								.replace("&rdquo;", "”").replace("&middot;", "·").replace("&nbsp", " ")
-								.replace(" ", "").replace("	", "").replace("&quot;", "\"");
+								.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;","&")
+								.replace("&quot;", "\"").replace(" ", "").replace("	", "");
 //						System.out.println("linkabstract = " + link_abstractString);
 						result_link_struct.setLink_abstract(link_abstractString);
 					} else {

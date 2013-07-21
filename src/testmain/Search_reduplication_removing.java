@@ -55,7 +55,7 @@ public class Search_reduplication_removing {
 		//先调用Search_word_process类处理输入
 		Search_word_process searchword = null;
 		try {
-			searchword = new Search_word_process('G',"金融 数据挖掘",1);
+			searchword = new Search_word_process('B',"新时代的数据挖掘",1);
 			searchword.handle_search_word_url();
 		} catch (Exception e) {
 			// TODO 自动生成的 catch 块
@@ -63,6 +63,7 @@ public class Search_reduplication_removing {
 			e.printStackTrace();
 		}
 		
+		System.out.println(searchword.getsearch_url());
 			
 		//调用Search_engine_process类将结果页面中的有效信息抓取出来
 		Search_engine_process search_engine_process = new Search_engine_process();
