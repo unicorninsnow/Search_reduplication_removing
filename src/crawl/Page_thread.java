@@ -79,8 +79,7 @@ public class Page_thread implements Runnable {
 			// 更新链接URL
 			page_to_analyze.setLink_url(parser.getURL());
 			
-			// 设定标题过滤器
-			NodeFilter title_filter = new TagNameFilter("title");
+			
 			
 			/*
 			 * NodeFilter mainbody_filter_p = new TagNameFilter("p"); NodeFilter
@@ -91,10 +90,10 @@ public class Page_thread implements Runnable {
 			
 			try {
 				// 进行标题更新
-//				update_title(parser, title_filter);
+//				update_title(parser);
 				// 进行正文抓取
-//				get_mainbody(parser);
-				get_mainbody_test(parser);
+//				get_mainbody_continuous_text(parser);
+				get_mainbody_TextTag(parser);
 				
 			} catch (EncodingChangeException e) {
 				/* 对编码有问题的链接进行编码修复并进行第二次抓取 */
@@ -105,10 +104,10 @@ public class Page_thread implements Runnable {
 				parser.reset();
 				
 				// 进行标题更新
-//				update_title(parser, title_filter);
+//				update_title(parser);
 				// 进行正文抓取
-//				get_mainbody(parser);
-				get_mainbody_test(parser);
+//				get_mainbody_continuous_text(parser);
+				get_mainbody_TextTag(parser);
 			}
 		} catch (ParserException e) {
 			e.printStackTrace();
@@ -117,34 +116,36 @@ public class Page_thread implements Runnable {
 	}
 
 	/**
-	 * 测试用  实际进行正文抓取的核心函数
-	 * @version 1.1 TextNode标签法
+	 * 实际进行正文抓取的核心函数 TextNode标签法
+	 * @version 1.1.2 TextNode标签法 除去了一些父结点是ScriptTag或StyleTag 但去除的不彻底<br/>
+	 * 已知BUG：对百度文库之类内嵌在swf的正文毫无办法
 	 * @param parser 该链接的解析器
 	 * @param mainbody_filter 页面正文的过滤方式
 	 * @param mainbody_analyzed 存放正文的字符串
 	 * @throws ParserException 解析器的异常
 	 * @throws Exception 正文为空异常
 	 */
-	public void get_mainbody_test(Parser parser) throws ParserException, Exception {
+	public void get_mainbody_TextTag(Parser parser) throws ParserException, Exception {
+		//对可能的正文大结点做过滤
 		NodeFilter bodyFilter = new TagNameFilter("body");
 		NodeList bodys = parser.extractAllNodesThatMatch(bodyFilter);
 		if(bodys.size() != 1)	throw new Exception("no body node!");
 		Node body = bodys.elementAt(0);
 		
-		
+		//设定取得各个正文句段的过滤方式 并据此进行抓取正文
 		NodeFilter mainbody_filter = new NodeClassFilter(TextNode.class);
-		NodeList main_body = new NodeList();
-		body.collectInto(main_body, mainbody_filter);
+		NodeList main_bodys = new NodeList();
+		body.collectInto(main_bodys, mainbody_filter);
 		
 		String mainbody_analyzed = "";
 		
 		// 对 通过该过滤方式无法获取任何正文结点 的情况 抛出空正文异常
-		if (main_body == null)
+		if (main_bodys.size() == 0)
 			throw new Exception("Main body is null!");
 
-		for (int i = 0; i < main_body.size(); ++i) {
+		for (int i = 0; i < main_bodys.size(); ++i) {
 			
-			Node mainbody_text = (Node) main_body.elementAt(i);
+			Node mainbody_text = (Node) main_bodys.elementAt(i);
 			
 			if((mainbody_text.getParent() instanceof ScriptTag) || (mainbody_text.getParent() instanceof StyleTag)) continue;
 //			System.out.println(mainbody_text.getText());
@@ -158,16 +159,19 @@ public class Page_thread implements Runnable {
 			temptext = temptext.replace("&ldquo;", "“").replace("&rdquo;", "”")
 					.replace("&middot;", "·").replace("&nbsp;", " ")
 					.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;","&").replace("&copy;","©" )
-					.replace("&quot;", "\"");
+					.replace("&quot;", "\"").replace("&apos;", "'");
 			
 //			System.out.println(temptext);
-			temptext = temptext.replace('n', 's').replace(" ", "").replace("	", "");
+			temptext = temptext.replace("\n", "").replace("\r", "");
+			temptext = temptext.replace("\t", " ");
+//			temptext = temptext.replace("　", "").replace(" ", "");
+//			System.out.println(temptext);
 			
-				mainbody_analyzed = mainbody_analyzed + temptext + "\n";
+				mainbody_analyzed = mainbody_analyzed + temptext;// + "\n";
 //			 System.out.println("=================paragraph=============");
 		}
-		 System.out.println(mainbody_analyzed);
-		 System.out.println("=================one page is finished.==================");
+//		 System.out.println(mainbody_analyzed);
+//		 System.out.println("=================one page is finished.==================");
 
 		// 将正文内容 存入链接信息块
 		page_to_analyze.setLink_text(mainbody_analyzed);
@@ -179,15 +183,16 @@ public class Page_thread implements Runnable {
 	
 	
 	/**
-	 * 实际进行正文抓取的核心函数
-	 * @version 1.0 连续纯文本阈值法
+	 * 实际进行正文抓取的核心函数 连续纯文本阈值法
+	 * @version 1.0 连续纯文本阈值法<br/>
+	 * 已知BUG：无法对分句成许多小句(长度小于阈值)的正文结点进行抓取
 	 * @param parser 该链接的解析器
 	 * @param mainbody_filter 页面正文的过滤方式
 	 * @param mainbody_analyzed 存放正文的字符串
 	 * @throws ParserException 解析器的异常
 	 * @throws Exception 正文为空异常
 	 */
-	public void get_mainbody(Parser parser) throws ParserException, Exception {
+	public void get_mainbody_continuous_text(Parser parser) throws ParserException, Exception {
 		// 设定正文过滤器
 		NodeFilter mainbody_filter = new TagNameFilter("p");
 		
@@ -227,7 +232,10 @@ public class Page_thread implements Runnable {
 	 * @param title_filter 标题的过滤方式
 	 * @throws ParserException 解析器的异常
 	 */
-	public void update_title(Parser parser, NodeFilter title_filter) throws ParserException {
+	public void update_title(Parser parser) throws ParserException {
+		// 设定标题过滤器
+		NodeFilter title_filter = new TagNameFilter("title");
+		
 		String title_analyzed = "";
 		NodeList titles = parser.extractAllNodesThatMatch(title_filter);
 		try {

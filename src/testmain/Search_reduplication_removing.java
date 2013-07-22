@@ -55,7 +55,7 @@ public class Search_reduplication_removing {
 		//先调用Search_word_process类处理输入
 		Search_word_process searchword = null;
 		try {
-			searchword = new Search_word_process('B',"镖行天下前传之至尊国宝",1);
+			searchword = new Search_word_process('B',"数据结构与金融",1);
 			searchword.handle_search_word_url();
 		} catch (Exception e) {
 			// TODO 自动生成的 catch 块
@@ -81,14 +81,14 @@ public class Search_reduplication_removing {
 		
 		//调用Pages_analysis类对各个链接进行正文提取
 		Pages_analysis pages_analysis = new Pages_analysis();
-//		pages_analysis.analyze_pages_use_thread(result_links);
+		pages_analysis.analyze_pages_use_thread(result_links);
 		
 		//测试用抓取正文的线程管理代码 其顺序执行 无多线程并发
-		pages_analysis.analyze_pages(result_links);
+//		pages_analysis.analyze_pages(result_links);
 		
 		
 		//输出result_links链接信息块链表
-//		result_links.output_all_links();
+		result_links.output_all_links();
 		
 		return ;
 	}
