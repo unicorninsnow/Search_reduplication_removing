@@ -18,7 +18,7 @@ import datapackage.Result_Link_Struct;
  * 该类是用于一个链接对应页面的信息抓取的一个线程类<br/>
  * 抓取的信息包括 该链接的URL更新 和 正文抓取
  * @author Daniel Qian
- * @version 1.1 正文抓取采用 连续纯文本阈值法
+ * @version 1.2 正文抓取采用 TextTag结点法
  */
 public class Page_thread implements Runnable {
 	/*
@@ -66,9 +66,6 @@ public class Page_thread implements Runnable {
 	 * @throws Exception
 	 */
 	public void crawl_page() throws Exception {
-		
-//		 System.out.println(page_to_analyze.getLink_title());
-//		 System.out.println(page_to_analyze.getLink_url());
 		try {
 			Parser parser = new Parser(page_to_analyze.getLink_url());
 			
@@ -79,21 +76,12 @@ public class Page_thread implements Runnable {
 			// 更新链接URL
 			page_to_analyze.setLink_url(parser.getURL());
 			
-			
-			
-			/*
-			 * NodeFilter mainbody_filter_p = new TagNameFilter("p"); NodeFilter
-			 * mainbody_filter_article = new HasAttributeFilter("class",
-			 * "article"); NodeFilter mainbody_filter = new
-			 * OrFilter(mainbody_filter_p,mainbody_filter_article);
-			 */
-			
 			try {
 				// 进行标题更新
 //				update_title(parser);
 				// 进行正文抓取
-//				get_mainbody_continuous_text(parser);
-				get_mainbody_TextTag(parser);
+				get_mainbody_TextTag(parser);	//TextTag法
+//				get_mainbody_continuous_text(parser);	//连续纯文本阈值法
 				
 			} catch (EncodingChangeException e) {
 				/* 对编码有问题的链接进行编码修复并进行第二次抓取 */
@@ -106,8 +94,8 @@ public class Page_thread implements Runnable {
 				// 进行标题更新
 //				update_title(parser);
 				// 进行正文抓取
-//				get_mainbody_continuous_text(parser);
-				get_mainbody_TextTag(parser);
+				get_mainbody_TextTag(parser);	//TextTag法
+//				get_mainbody_continuous_text(parser);	//连续纯文本阈值法
 			}
 		} catch (ParserException e) {
 			e.printStackTrace();
@@ -147,31 +135,22 @@ public class Page_thread implements Runnable {
 			
 			Node mainbody_text = (Node) main_bodys.elementAt(i);
 			
+			//若该TextTag结点其父结点为ScriptTag或是StyleTag 则忽略该TextTag结点
 			if((mainbody_text.getParent() instanceof ScriptTag) || (mainbody_text.getParent() instanceof StyleTag)) continue;
-//			System.out.println(mainbody_text.getText());
-//			System.out.println(mainbody_text.getParent().getClass().getName());
-//			System.out.println(mainbody_text.getParent().getText());
-//			System.out.println(mainbody_text.getParent().getParent().getClass().getName());
 			
-			
+			//取出正文String
 			String temptext = mainbody_text.toPlainTextString();
 			//替换一些HTML的转义字符
 			temptext = temptext.replace("&ldquo;", "“").replace("&rdquo;", "”")
 					.replace("&middot;", "·").replace("&nbsp;", " ")
 					.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;","&").replace("&copy;","©" )
 					.replace("&quot;", "\"").replace("&apos;", "'");
-			
-//			System.out.println(temptext);
 			temptext = temptext.replace("\n", "").replace("\r", "");
 			temptext = temptext.replace("\t", " ");
 //			temptext = temptext.replace("　", "").replace(" ", "");
-//			System.out.println(temptext);
 			
 				mainbody_analyzed = mainbody_analyzed + temptext;// + "\n";
-//			 System.out.println("=================paragraph=============");
 		}
-//		 System.out.println(mainbody_analyzed);
-//		 System.out.println("=================one page is finished.==================");
 
 		// 将正文内容 存入链接信息块
 		page_to_analyze.setLink_text(mainbody_analyzed);
@@ -211,12 +190,8 @@ public class Page_thread implements Runnable {
 					.replace("&quot;", "\"").replace(" ", "").replace("	", "");
 			if (temptext.length() > text_para_threshold) {
 				mainbody_analyzed = mainbody_analyzed + temptext + "\n";
-				// System.out.println(temptext);
 			}
-			// System.out.println("=================paragraph=============");
 		}
-		// System.out.println(mainbody_analyzed);
-		// System.out.println("=================one page is finished.==================");
 
 		// 将正文内容 存入链接信息块
 		page_to_analyze.setLink_text(mainbody_analyzed);

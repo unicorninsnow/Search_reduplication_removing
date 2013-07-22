@@ -60,14 +60,11 @@ public class Pages_analysis {
 		//为每一个链接信息块创建一个线程
 				Thread  []page = new Thread[result_links.num_of_links()];
 				//对每个线程进行信息块参数传入 并开始顺序运行线程
-//				int i = 2;
 				for(int i = 0;i < result_links.num_of_links();++i){
 					page[i] = new Thread(new Page_thread(result_links.get_link(i)));
 					page[i].start();
 					page[i].join();
 				}
-			
-		
 		return;
 	}
 	

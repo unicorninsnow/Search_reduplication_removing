@@ -60,6 +60,7 @@ public class Search_reduplication_removing {
 		} catch (Exception e) {
 			// TODO 自动生成的 catch 块
 			//////////应要求重新输入合法的数据
+			//////////尚未完成
 			e.printStackTrace();
 		}
 		
@@ -68,7 +69,6 @@ public class Search_reduplication_removing {
 		//调用Search_engine_process类将结果页面中的有效信息抓取出来
 		Search_engine_process search_engine_process = new Search_engine_process();
 		try {
-//			search_engine_process.extractLinks_old(searchword.getsearch_url(), searchword.getsearch_mode(), searchword.getNoofpagetoaccess());
 			search_engine_process.extractLinks(searchword.getsearch_url(), searchword.getsearch_mode(), searchword.getNoofpagetoaccess());
 		} catch (Exception e) {
 			// TODO 自动生成的 catch 块
@@ -85,7 +85,6 @@ public class Search_reduplication_removing {
 		
 		//测试用抓取正文的线程管理代码 其顺序执行 无多线程并发
 //		pages_analysis.analyze_pages(result_links);
-		
 		
 		//输出result_links链接信息块链表
 		result_links.output_all_links();
