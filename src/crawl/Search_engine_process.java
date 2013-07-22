@@ -51,10 +51,10 @@ public class Search_engine_process {
 	 * 谷歌抓取不稳定 时常会Connection reset  
 	 * @param url (String) 将要被抓取的搜索结果页面的URL
 	 * @param search_mode (char) 基础搜索引擎代码
-	 * @param Noofpagetoaccess (int) 结果页面的页号(是对应链接的信息 用于存入信息块)
+	 * @param search_page (int) 结果页面的页号(是对应链接的信息 用于存入信息块)
 	 * @throws Exception 抓取过程异常 主要是parser异常
 	 */
-	public void extractLinks(String url, char search_mode, int Noofpagetoaccess) throws Exception {
+	public void extractLinks(String url, char search_mode, int search_page) throws Exception {
 		try {
 			Parser parser = new Parser();
 			parser.setURL(url);
@@ -64,14 +64,14 @@ public class Search_engine_process {
 			 */
 			switch (search_mode) {
 			case 'B':// 百度
-				extractLinks_baidu(parser, Noofpagetoaccess);
+				extractLinks_baidu(parser, search_page);
 				break;
 			case 'G':// 谷歌
 				// 代理设置 用于解决国内网络有时被墙的情况
 				 Parser.getConnectionManager().setProxyHost("127.0.0.1");
 				 Parser.getConnectionManager().setProxyPort(8118);
 
-				extractLinks_google(parser, Noofpagetoaccess);
+				extractLinks_google(parser, search_page);
 				break;
 			default:
 				throw new Exception("Illegal search mode!");
@@ -89,10 +89,10 @@ public class Search_engine_process {
 	 * 对百度结果页面进行 各链接的标题 URL 摘要等信息进行抓取 的具体函数
 	 * @version 1.1 增加对&lt;font size="-1"&gt;类型摘要的支持
 	 * @param parser 页面解析器
-	 * @param Noofpagetoaccess (int) 结果页面的页号(是对应链接的信息 用于存入信息块)
+	 * @param search_page (int) 结果页面的页号(是对应链接的信息 用于存入信息块)
 	 * @throws Exception
 	 */
-	public void extractLinks_baidu(Parser parser, int Noofpagetoaccess) throws Exception {
+	public void extractLinks_baidu(Parser parser, int search_page) throws Exception {
 		/* 设定符合百度的结果链接块过滤方式 并由此对解析器的内容进行过滤 */
 		NodeFilter result_filter_regu = new HasAttributeFilter("class", "result");
 		NodeFilter result_filter_op = new HasAttributeFilter("class", "result-op");
@@ -110,7 +110,7 @@ public class Search_engine_process {
 				Node resultNode = (Node) nodes.elementAt(i);
 
 				// 获取链接所在原页号
-				result_link_struct.setLink_page_from(Noofpagetoaccess);
+				result_link_struct.setLink_page_from(search_page);
 				// 获取链接原号数
 				int result_num_from = Integer.parseInt(((TagNode) resultNode).getAttribute("id"));
 				result_link_struct.setLink_num_from(result_num_from);
@@ -254,10 +254,10 @@ public class Search_engine_process {
 	 * 已知bug：<br/> 
 	 * 不稳定 时常会Connection reset
 	 * @param parser 页面解析器
-	 * @param Noofpagetoaccess (int) 结果页面的页号(是对应链接的信息 用于存入信息块)
+	 * @param search_page (int) 结果页面的页号(是对应链接的信息 用于存入信息块)
 	 * @throws Exception 
 	 */
-	public void extractLinks_google(Parser parser,int Noofpagetoaccess) throws Exception{
+	public void extractLinks_google(Parser parser,int search_page) throws Exception{
 		/* 设定符合谷歌的结果链接块过滤方式 并由此对解析器的内容进行过滤 */
 		NodeFilter result_filter = new HasAttributeFilter("class", "g");
 		NodeList nodes = parser.extractAllNodesThatMatch(result_filter);
@@ -280,8 +280,8 @@ public class Search_engine_process {
 					Result_Link_Struct result_link_struct = new Result_Link_Struct();
 
 					// 获取链接所在原页号
-					result_link_struct.setLink_page_from(Noofpagetoaccess);
-					result_link_struct.setLink_num_from((Noofpagetoaccess - 1)*10 + i);
+					result_link_struct.setLink_page_from(search_page);
+					result_link_struct.setLink_num_from((search_page - 1)*10 + i);
 
 					
 					/* 处理链接标题和链接URL(谷歌跳转URL) */
@@ -384,10 +384,10 @@ public class Search_engine_process {
 	 * @version 1.0 能初步完成抓取任务 但百度部分异常较多 谷歌还未全部完成 未测试
 	 * @param url (String) 将要被抓取的搜索结果页面的URL
 	 * @param search_mode (char) 基础搜索引擎代码
-	 * @param Noofpagetoaccess (int) 结果页面的页号(是对应链接的信息 用于存入信息块)
+	 * @param search_page (int) 结果页面的页号(是对应链接的信息 用于存入信息块)
 	 * @throws Exception 抓取过程异常 主要是parser异常
 	 */
-	@Deprecated public void extractLinks_old(String url,char search_mode,int Noofpagetoaccess) throws Exception {
+	@Deprecated public void extractLinks_old(String url,char search_mode,int search_page) throws Exception {
 		try {
 			Parser parser = new Parser();
 			
@@ -516,7 +516,7 @@ public class Search_engine_process {
 						
 						
 						//确定第几页
-						result_link_struct.setLink_page_from(Noofpagetoaccess);
+						result_link_struct.setLink_page_from(search_page);
 						result_links.add_link(result_link_struct);
 						//System.out.println("******==================******");
 					}

@@ -55,13 +55,16 @@ public class Search_reduplication_removing {
 		//先调用Search_word_process类处理输入
 		Search_word_process searchword = null;
 		try {
-			searchword = new Search_word_process('B',"数据结构与金融",1);
+			searchword = new Search_word_process('X',"数据结构与金融",1);
 			searchword.handle_search_word_url();
 		} catch (Exception e) {
 			// TODO 自动生成的 catch 块
 			//////////应要求重新输入合法的数据
 			//////////尚未完成
 			e.printStackTrace();
+			//若是非法基础搜索引擎代码 则程序已自动更正为B 并自动执行
+			//但仍会建议再确认一下基础搜索引擎代码 进行更正并重新执行
+			
 		}
 		
 		System.out.println(searchword.getsearch_url());
@@ -69,7 +72,7 @@ public class Search_reduplication_removing {
 		//调用Search_engine_process类将结果页面中的有效信息抓取出来
 		Search_engine_process search_engine_process = new Search_engine_process();
 		try {
-			search_engine_process.extractLinks(searchword.getsearch_url(), searchword.getsearch_mode(), searchword.getNoofpagetoaccess());
+			search_engine_process.extractLinks(searchword.getsearch_url(), searchword.getsearch_mode(), searchword.getsearch_page());
 		} catch (Exception e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
