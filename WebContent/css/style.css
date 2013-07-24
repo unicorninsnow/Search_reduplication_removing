@@ -1,5 +1,5 @@
-
-/*²Ëµ¥ÑùÊ½*/ 
+ï»¿
+/*èœå•æ ·å¼*/ 
 #basic-accordian{ 
 width:80%; 
 z-index:2; 
@@ -12,7 +12,7 @@ border-bottom-color: #666666;
 padding-top: 15px; 
 padding-bottom: 15px; */
 margin-bottom: 2%; 
-}/*²Ëµ¥±³¾°*/ 
+}/*èœå•èƒŒæ™¯*/ 
 .accordion_headings{ 
 padding:2px; 
 cursor:pointer; 
@@ -20,7 +20,7 @@ font-weight:bold;
 font-size: 14px; 
 line-height: 25px; 
 letter-spacing: 1px; 
-}/*²Ëµ¥·ÖÀàĞĞ*/ 
+}/*èœå•åˆ†ç±»è¡Œ*/ 
 .accordion_headings:hover{ 
 } 
 .accordion_child{ 
@@ -46,5 +46,5 @@ color: #666666;
 color: #FFFFFF; 
 } 
 .header_highlight{ 
-}/*µ±Ç°ÏÔÊ¾²Ëµ¥·ÖÀàÑùÊ½*/ 
-/*²Ëµ¥ÑùÊ½½áÊø*/ 
+}/*å½“å‰æ˜¾ç¤ºèœå•åˆ†ç±»æ ·å¼*/ 
+/*èœå•æ ·å¼ç»“æŸ*/ 

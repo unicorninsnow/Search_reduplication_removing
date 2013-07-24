@@ -35,10 +35,10 @@
 	 */
 
 	/*利用谷歌API来获取搜索结果用于测试*/
-	String gapiurl = "https://www.googleapis.com/customsearch/v1?key=AIzaSyC6H3srhmy5nYxDLh9hdSOoqoVfCoK7vKE&cx=016107310399893718915:kqe8vf9-tza&q="
-	+ URLEncoder.encode(content, "UTF-8")
-	+ "&alt=json"
-	+ "&start=" + ((nowpage - 1) * 10 + 1);
+	//String gapiurl = "https://www.googleapis.com/customsearch/v1?key=AIzaSyC6H3srhmy5nYxDLh9hdSOoqoVfCoK7vKE&cx=016107310399893718915:kqe8vf9-tza&q="
+	//+ URLEncoder.encode(content, "UTF-8")
+	//+ "&alt=json"
+	//+ "&start=" + ((nowpage - 1) * 10 + 1);
 	Cluster fun = new Cluster();
 %>
 <!DOCTYPE html>
@@ -49,9 +49,6 @@
 <script type="text/javascript" src="js/menu.js"></script>
 <script type="text/javascript">
 	//返回函数
-	function onBackHome() {
-		window.location.href = "index.jsp";
-	}
 	function onSearch() {
 		var content = document.getElementById("content").value;
 		content = encodeURI(encodeURI(content));
@@ -79,13 +76,74 @@
 		tooltip.style.left = e.offsetLeft + 20;
 		tooltip.style.display = 'block';
 	}
+	//以下是异步刷新
+	function makeajax(){
+		url_quest = 'getrealurl.jsp?wd=' + encodeURI(encodeURI('<%=content %>')) + '&page=' + '<%=nowpage %>';
+		makeRequest(url_quest);
+	}
+	function makeRequest(url) {
+ 	http_request = false;
+ 	if (window.XMLHttpRequest) {
+ 	 	http_request = new XMLHttpRequest();
+  		if (http_request.overrideMimeType){
+   		http_request.overrideMimeType('text/xml');
+  		}
+ 	} else if (window.ActiveXObject) {
+  		try{
+   			http_request = new ActiveXObject("Msxml2.XMLHTTP");
+  		} catch (e) {
+   			try {
+    			http_request = new ActiveXObject("Microsoft.XMLHTTP");
+   			} catch (e) {
+   				}	
+  		}
+ 	}
+ 	if (!http_request) {
+  	alert("您的浏览器不支持当前操作，请使用 IE 5.0 以上版本!");
+  	return false;
+ 	}
+ 
+
+	//定义页面调用的方法changeurl,没有();
+ 	http_request.onreadystatechange = changeurl;
+ 	http_request.open('GET', url, true);
+
+	//禁止IE缓存
+ 	http_request.setRequestHeader("If-Modified-Since","0");
+
+	//发送数据
+	http_request.send(null);
+
+
+ }
+
+function changeurl() {
+ 	if (http_request.readyState == 4) {
+  		if (http_request.status == 0 || http_request.status == 200) {
+   			var result = http_request.responseText;
+   			var resultlist = result.split(',');
+   			var i = 0;
+   			for(i = 0;i < resultlist.length;i+=2)
+   			{
+   				var Id = 0;
+   				try{
+   					Id = parseInt(resultlist[i]);
+   					document.getElementById ('url' + Id).innerHTML=resultlist[i+1];
+   				} catch (e) {
+   					break;
+   				}
+   			}
+  		} else {//http_request.status != 200
+  		}
+ 	}
+}
 </script>
 <link rel="stylesheet" type="text/css" media="all" href="css/style.css">
 <link rel="stylesheet" type="text/css" href="css/buttons.css" />
 </head>
-<body onload="new Accordian('outerres',5,'header_highlight');">
+<body onload="new Accordian('outerres',5,'header_highlight');makeajax();">
 	<div id=head style="padding-top:20px;padding-bottom:15px;">
-		<a href="index.jsp" class="s_logo" onmousedown="onBackHome()"
+		<a href="index.jsp" class="s_logo"
 			style="float:left;padding-right:20px"><img
 			src="images/banner.png" width="100" height="38" border="0" alt="返回首页"
 			title="返回首页"> </a>
@@ -101,10 +159,10 @@
 	</div>
 	<div class="r" style="padding-top:20px">
 		<%
-			boolean flag = true;
+			boolean flag = true,dontajax = true;
 			if (content != null && content != "") {
 				try {
-					fun.process(content, nowpage);
+					dontajax = fun.process_simple(content, nowpage);//判断是否需要进行后台处理
 				} catch (Exception e) {
 					flag = false;
 					out.print("出错了！请稍后访问！");
@@ -125,9 +183,10 @@
 					<a href="<%=node.geturl()%>" onmousedown="" target="_blank"><%=node.gettitle()%></a>
 					<div class="s">
 						<div>
-							<div class="url"
+							<div class="url" id="url<%=node.getid()%>"
 								style="white-space:nowrap;color: rgb(0, 153, 51);">
-								<cite><%=node.geturl()%></cite>
+								<cite> <% //if(dontajax) {%> <%=node.geturl()%> <%//} %>
+								</cite>
 							</div>
 							<div class="cont"></div>
 							<span class="st" style="font-size: 13px;"><%=node.getabs()%></span>
@@ -160,11 +219,12 @@
 										while (nodep != null) {
 									%>
 									<li><a href="<%=nodep.geturl()%>" target="_blank"><%=nodep.gettitle()%></a>
-										<div class="url"
+										<div class="url" id="url<%=nodep.getid()%>"
 											style="white-space:nowrap;color: rgb(0, 153, 51);">
+											<%// if(dontajax) {%>
 											<cite><%=nodep.geturl()%></cite>
-										</div>
-									</li>
+											<%//} %>
+										</div></li>
 									<%
 										nodep = nodep.getnext();
 														}
@@ -190,9 +250,25 @@
 									+ URLEncoder.encode(
 											URLEncoder.encode(content, "UTF-8"),
 											"UTF-8") + "&page=" + (nowpage - 1)
-									+ ">上一页</a>&nbsp;&nbsp;&nbsp;" + "第 " + nowpage
-									+ " 页" + "&nbsp;&nbsp;");
+									+ ">上一页</a>&nbsp;&nbsp;&nbsp;" + "&nbsp;&nbsp;");
 						}
+						int pages = nowpage - 5;
+						if(pages < 1)pages = 1;
+						for(;pages < nowpage;pages++)
+						{
+									out.print("<a href=results.jsp?wd="
+									+ URLEncoder.encode(
+											URLEncoder.encode(content, "UTF-8"),
+											"UTF-8") + "&page=" + (pages)
+									+ ">"+ pages + "</a>&nbsp;");
+						}
+						out.print("第&nbsp;" + nowpage + "&nbsp;页&nbsp;");
+						for(pages = nowpage + 1;pages <= nowpage + 5;pages++)
+									out.print("<a href=results.jsp?wd="
+									+ URLEncoder.encode(
+											URLEncoder.encode(content, "UTF-8"),
+											"UTF-8") + "&page=" + (pages)
+									+ ">"+ pages + "</a>&nbsp;");
 			%>
 			<%
 				out.print("<a href=results.jsp?wd="
