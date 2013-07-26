@@ -29,6 +29,7 @@ public class Cluster {
 	static final String DBUSERNAME = "search";
 	static final String DBPASSWD = "search";
 	static final char SEARCH_ENGINE_TYPE = 'B';
+	static final int SIMILARITY_JUDGE_ALGO = 2;
 	
 	ArrayList<Clusteredresult_Queue> list = new ArrayList<Clusteredresult_Queue>();
 	static ArrayList<String> worklist = new ArrayList<String>();
@@ -281,7 +282,7 @@ public class Cluster {
 
 					//output1.write("text1: "+ text + "\n");
 					//output1.write("text2: " + strlist.get(k) + "\n");
-					if(Similarity_Judgement.similarity_judge(text,strlist.get(k),1))
+					if(Similarity_Judgement.similarity_judge(text,strlist.get(k),SIMILARITY_JUDGE_ALGO))
 					{
 						//output1.write("The Same!\n");
 						break;

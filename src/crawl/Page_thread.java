@@ -1,5 +1,8 @@
 package crawl;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
@@ -67,8 +70,11 @@ public class Page_thread implements Runnable {
 	 */
 	public void crawl_page() throws Exception {
 		try {
-			Parser parser = new Parser(page_to_analyze.getLink_url());
-			
+			URL urlPage = new URL(page_to_analyze.getLink_url());  
+            HttpURLConnection conn = (HttpURLConnection) urlPage.openConnection();  
+            conn.setConnectTimeout(5000);  
+            conn.setReadTimeout(5000);  
+            Parser parser = new Parser(conn);  
 			// 设定代理
 			parser.getConnectionManager().setProxyHost("127.0.0.1");
 			parser.getConnectionManager().setProxyPort(8118);

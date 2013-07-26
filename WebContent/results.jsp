@@ -45,7 +45,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Result</title>
+<title>Result:<%=content %></title>
 <script type="text/javascript" src="js/menu.js"></script>
 <script type="text/javascript">
 	//返回函数
