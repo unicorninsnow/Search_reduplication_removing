@@ -7,8 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.htmlparser.util.*;
+
+import com.mysql.jdbc.Constants;
 
 import similarity_judge.Similarity_Judgement;
 
@@ -21,23 +24,59 @@ import datapackage.Link_queue;
 import datapackage.Result_Link_Struct;
 
 public class Cluster {
-
+	/*配置信息*/
+	static final String DBINFO = "localhost:3306/searchdb";
+	static final String DBUSERNAME = "search";
+	static final String DBPASSWD = "search";
+	static final char SEARCH_ENGINE_TYPE = 'B';
+	
 	ArrayList<Clusteredresult_Queue> list = new ArrayList<Clusteredresult_Queue>();
+	static ArrayList<String> worklist = new ArrayList<String>();
+	
 	public ArrayList<Clusteredresult_Queue> getlist()
 	{
 		return list;
+	}
+	/*获取工作项目的索引*/
+	public static int getwork(String keyword,int showpage)
+	{
+		int worksize = worklist.size(),nowwork = worklist.indexOf(keyword);
+		while(nowwork >= 0)
+		{
+			if(worklist.get(nowwork + 1).equals(String.valueOf(showpage)))//worklist按照关键词、页码一个个排列
+			{
+				break;
+			}
+			else {
+				nowwork = worklist.indexOf(worklist.subList(nowwork + 1, worksize));//继续向后寻找
+			}
+		}
+		return nowwork;//返回工作列表中找到的项目的索引，没找到则为-1
+	}
+	public static void insertwork(String keyword,int showpage)
+	{
+		worklist.add(keyword);
+		worklist.add(String.valueOf(showpage));
+	}
+	public static void removework(int index)
+	{
+		if(index >= 0 && index < worklist.size() - 1)
+		{
+			worklist.remove(index + 1);//删除页码
+			worklist.remove(index);//删除关键词
+		}
 	}
 	/*判断数据是否存在的同时取数据*/
 	public int getdb(String keyword,int showpage) throws SQLException, ClassNotFoundException
 	{
 		Class.forName("com.mysql.jdbc.Driver");	
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/searchdb", "search", "search");
-		Statement stmt = conn.createStatement();
+		Connection conn = DriverManager.getConnection("jdbc:mysql://" + DBINFO, DBUSERNAME, DBPASSWD);
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);//可滚动的
 		String sql = "Select ID from KeywordTable where keyword = '" + keyword +"'";
 		ResultSet rs = stmt.executeQuery(sql);
 		if(!rs.next())
 		{
-			return 1;//没有找到关键字
+			return 1;//没有找到关键字。需要抓取
 		}
 		sql = "Select * from ResultTable where showpage = " + 
 				showpage +" and keywordid in (Select ID from KeywordTable where keyword = '" + keyword +"')";
@@ -46,10 +85,20 @@ public class Cluster {
 		Clusteredresult_Queue queue = new Clusteredresult_Queue();
 		if(rs.next())
 		{
+	        try {
+	            rs.last();
+	            if(rs.getRow()!=20)
+	            	return 3;//数据库没存全
+	            rs.first();
+	        } catch (Exception e) {
+	            // TODO: handle exception
+	            e.printStackTrace();
+	        }
 			do{
 				String linktitle = rs.getString("linktitle");
 				String linkurl = rs.getString("linkurl");
 				String linkabstract = rs.getString("linkabstract");
+				int id = rs.getInt("formresultnum");
 				int resultnum = Integer.parseInt(rs.getString("resultnum"));
 				if(resultnum != n)
 				{
@@ -57,15 +106,15 @@ public class Cluster {
 					queue = new Clusteredresult_Queue();
 					n++;
 				}
-				queue.insert(linkurl, linktitle, linkabstract, 0);
+				queue.insert(linkurl, linktitle, linkabstract, id);
 			}while(rs.next());
 			if(queue.gethead() != null)//说明最后一个链表有内容
 			{
 				list.add(queue);
 			}
-			return 2;//找到并从注册表中提取
+			return 2;//找到并从注册表中提取，不需要抓取
 		}else
-			return 3;//有关键字但没有这页
+			return 3;//有关键字但没有这页，需要抓取
 	}
 	public boolean process_simple(String keyword,int showpage) throws SQLException, ClassNotFoundException
 	{//第一次搜索，由于需要抓取内容速度很慢，于是采用比较标题和摘要的方式处理，而后台自动处理抓取部分
@@ -81,7 +130,7 @@ public class Cluster {
 			//先调用Search_word_process类处理输入
 			Search_word_process searchword = null;
 			try {
-				searchword = new Search_word_process('B',keyword,i);
+				searchword = new Search_word_process(SEARCH_ENGINE_TYPE,keyword,i);
 				searchword.handle_search_word_url();
 			} catch (Exception e) {
 				// TODO 自动生成的 catch 块
@@ -149,6 +198,20 @@ public class Cluster {
 		int flag = getdb(keyword, showpage);
 		if(flag == 2)
 			return true;//数据库中有数据，正常返回
+		
+		/*开始判断队列中是否有相同的任务*/
+		int workindex = getwork(keyword, showpage);
+		if(workindex >= 0)//存在相同任务则反复等待数据库写入完成，这里本应该像传统的多线程操作一样建立临界区访问互斥机制，但貌似不会冲突，尚在测试中
+		{
+			while(getdb(keyword, showpage) != 2)//一直等待另一个线程完成抓取，存数据库操作
+			{
+				Thread.sleep(3000);//等待三秒
+			}
+			return false;//相当于进行了抓取任务，所以需要输出
+		}
+		/*没有相同任务，继续进行*/
+		insertwork(keyword, showpage);
+		
 		ArrayList<String> strlist = new ArrayList<String>();
 		Clusteredresult_Queue queue;
 		
@@ -156,8 +219,9 @@ public class Cluster {
 		{
 			//先调用Search_word_process类处理输入
 			Search_word_process searchword = null;
+			System.out.println("开始抓取搜索引擎结果信息...");
 			try {
-				searchword = new Search_word_process('B',keyword,i);
+				searchword = new Search_word_process(SEARCH_ENGINE_TYPE,keyword,i);
 				searchword.handle_search_word_url();
 			} catch (Exception e) {
 				// TODO 自动生成的 catch 块
@@ -183,6 +247,7 @@ public class Cluster {
 			Link_queue result_links = search_engine_process.getresult_links();
 			
 			//调用Pages_analysis类对各个链接进行正文提取
+			System.out.println("开始进行各个链接的正文提取...");
 			Pages_analysis pages_analysis = new Pages_analysis();
 			pages_analysis.analyze_pages_use_thread(result_links);
 			
@@ -192,8 +257,9 @@ public class Cluster {
 			//输出result_links链接信息块链表
 			//result_links.output_all_links();
 			
-			
+			System.out.println("开始聚类...");
 			int Length = result_links.num_of_links();
+			//BufferedWriter output1 = new BufferedWriter(new FileWriter("a.txt"));
 			for(int j = 0;j < Length;j++)
 			{
 				Result_Link_Struct res = result_links.get_link(j);
@@ -212,8 +278,14 @@ public class Cluster {
 				int k;
 				for(k = 0;k < size;k++)
 				{
+
+					//output1.write("text1: "+ text + "\n");
+					//output1.write("text2: " + strlist.get(k) + "\n");
 					if(Similarity_Judgement.similarity_judge(text,strlist.get(k),1))
+					{
+						//output1.write("The Same!\n");
 						break;
+					}
 				}
 				if(k == size)//没有近似的
 				{
@@ -225,10 +297,12 @@ public class Cluster {
 					list.get(k).insert(url, title, abs ,j + (i-1)*10);
 				}
 			}
+			//output1.close();
 		}
+		System.out.println("开始写数据库...");
 		int size = list.size();
 		Class.forName("com.mysql.jdbc.Driver");	
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/searchdb", "search", "search");
+		Connection conn = DriverManager.getConnection("jdbc:mysql://" + DBINFO, DBUSERNAME, DBPASSWD);
 		Statement stmt = conn.createStatement();
 
 		String sql;
@@ -247,12 +321,16 @@ public class Cluster {
 			Clusteredresult_Node p = queue.head;
 			while(p != null)
 			{
-			sql = "Insert into ResultTable(keywordid,linktitle,linkurl,linkabstract,showpage,resultnum) values(" + keywordid +
-					",'" + p.gettitle() +"','" + p.geturl() +"','" + p.getabs() +"'," + showpage + "," + k + ")";
+			sql = "Insert into ResultTable(keywordid,linktitle,linkurl,linkabstract,showpage,formresultnum,resultnum) values(" + keywordid +
+					",'" + p.gettitle() +"','" + p.geturl() +"','" + p.getabs() +"'," + showpage + "," + p.getid() + "," + k + ")";
 			stmt.executeUpdate(sql);
 			p = p.next;
 			}
 		}
+		
+		workindex = getwork(keyword, showpage);//因为index可能发生变化必须重新获取，这里其实应该对worklist进行上锁。
+		removework(workindex);//删除任务
+		System.out.println("结束...");
 		return false;//需要输出
 	}
 	/*原使用Googleapi处理函数*/
