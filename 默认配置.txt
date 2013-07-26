@@ -1,0 +1,11 @@
+用Eclipse+Tomcat+Mysql即可执行
+
+默认mysql数据库配置：
+数据库地址localhost:3306/searchdb
+数据库结构可导入searchdb.sql
+数据库用户名search
+数据库密码search
+可到cluster.Cluster.java进行修改
+
+若要直接用Tomcat执行，需要在Eclipse中导出WAR（其实相当于压缩包）
+解压WAR或者Tomcat自动解压到服务器网页根目录下即可执行。
