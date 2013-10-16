@@ -213,11 +213,64 @@ public class Cluster {
 		/*没有相同任务，继续进行*/
 		insertwork(keyword, showpage);
 		
-		ArrayList<String> strlist = new ArrayList<String>();
-		Clusteredresult_Queue queue;
+		MyThread mt1 = new MyThread();
+		MyThread mt2 = new MyThread();
+		mt1.keyword = keyword;
+		mt1.i = showpage * 2 - 1;
+		mt2.keyword = keyword;
+		mt2.i = showpage * 2;
 		
-		for(int i = (showpage-1) * 2 + 1;i <= showpage * 2;i++)
+		mt1.start();
+		mt2.start();
+		
+		boolean is_all_thread_finished = false;
+		while (!is_all_thread_finished) {
+			//若没有全部完成 则主线程被阻塞在while循环中
+			is_all_thread_finished = true;
+			is_all_thread_finished = is_all_thread_finished && (!mt1.isAlive()) && (!mt2.isAlive());
+		}
+		
+		System.out.println("开始写数据库...");
+		int size = list.size();
+		Class.forName("com.mysql.jdbc.Driver");	
+		Connection conn = DriverManager.getConnection("jdbc:mysql://" + DBINFO, DBUSERNAME, DBPASSWD);
+		Statement stmt = conn.createStatement();
+
+		String sql;
+		if(flag == 1)//需要在表中添加关键字再添加项
 		{
+			sql = "Insert into KeywordTable(keyword) values('" + keyword + "')";
+			stmt.executeUpdate(sql);
+		}
+		sql = "Select ID from KeywordTable where keyword = '" + keyword +"'";
+		ResultSet rs = stmt.executeQuery(sql);
+		rs.next();
+		int keywordid = Integer.parseInt(rs.getString("ID"));
+		for(int k = 0;k < size;k++)
+		{
+			queue = list.get(k);
+			Clusteredresult_Node p = queue.head;
+			while(p != null)
+			{
+			sql = "Insert into ResultTable(keywordid,linktitle,linkurl,linkabstract,showpage,formresultnum,resultnum) values(" + keywordid +
+					",'" + p.gettitle() +"','" + p.geturl() +"','" + p.getabs() +"'," + showpage + "," + p.getid() + "," + k + ")";
+			stmt.executeUpdate(sql);
+			p = p.next;
+			}
+		}
+		
+		workindex = getwork(keyword, showpage);//因为index可能发生变化必须重新获取，这里其实应该对worklist进行上锁。
+		removework(workindex);//删除任务
+		System.out.println("结束...");
+		return false;//需要输出
+	}
+	
+	ArrayList<String> strlist = new ArrayList<String>();
+	Clusteredresult_Queue queue;
+	
+	
+	class MyThread extends Thread {
+	    public void run() {
 			//先调用Search_word_process类处理输入
 			Search_word_process searchword = null;
 			System.out.println("开始抓取搜索引擎结果信息...");
@@ -282,10 +335,15 @@ public class Cluster {
 
 					//output1.write("text1: "+ text + "\n");
 					//output1.write("text2: " + strlist.get(k) + "\n");
-					if(Similarity_Judgement.similarity_judge(text,strlist.get(k),SIMILARITY_JUDGE_ALGO))
-					{
-						//output1.write("The Same!\n");
-						break;
+					try {
+						if(Similarity_Judgement.similarity_judge(text,strlist.get(k),SIMILARITY_JUDGE_ALGO))
+						{
+							//output1.write("The Same!\n");
+							break;
+						}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 				if(k == size)//没有近似的
@@ -299,41 +357,17 @@ public class Cluster {
 				}
 			}
 			//output1.close();
-		}
-		System.out.println("开始写数据库...");
-		int size = list.size();
-		Class.forName("com.mysql.jdbc.Driver");	
-		Connection conn = DriverManager.getConnection("jdbc:mysql://" + DBINFO, DBUSERNAME, DBPASSWD);
-		Statement stmt = conn.createStatement();
-
-		String sql;
-		if(flag == 1)//需要在表中添加关键字再添加项
-		{
-			sql = "Insert into KeywordTable(keyword) values('" + keyword + "')";
-			stmt.executeUpdate(sql);
-		}
-		sql = "Select ID from KeywordTable where keyword = '" + keyword +"'";
-		ResultSet rs = stmt.executeQuery(sql);
-		rs.next();
-		int keywordid = Integer.parseInt(rs.getString("ID"));
-		for(int k = 0;k < size;k++)
-		{
-			queue = list.get(k);
-			Clusteredresult_Node p = queue.head;
-			while(p != null)
-			{
-			sql = "Insert into ResultTable(keywordid,linktitle,linkurl,linkabstract,showpage,formresultnum,resultnum) values(" + keywordid +
-					",'" + p.gettitle() +"','" + p.geturl() +"','" + p.getabs() +"'," + showpage + "," + p.getid() + "," + k + ")";
-			stmt.executeUpdate(sql);
-			p = p.next;
-			}
-		}
-		
-		workindex = getwork(keyword, showpage);//因为index可能发生变化必须重新获取，这里其实应该对worklist进行上锁。
-		removework(workindex);//删除任务
-		System.out.println("结束...");
-		return false;//需要输出
+	    }
+	    String keyword = new String();
+	    public int i = 0;
 	}
+	
+	
+	
+	
+	
+	
+	
 	/*原使用Googleapi处理函数*/
 	/*
 	public void putinlist(String keyword) throws IOException//测试用的谷歌api
