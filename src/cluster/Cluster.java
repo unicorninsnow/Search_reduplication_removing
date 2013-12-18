@@ -88,7 +88,7 @@ public class Cluster {
 		{
 	        try {
 	            rs.last();
-	            if(rs.getRow()!=20)
+	            if(rs.getRow() < 10)
 	            	return 3;//数据库没存全
 	            rs.first();
 	        } catch (Exception e) {
