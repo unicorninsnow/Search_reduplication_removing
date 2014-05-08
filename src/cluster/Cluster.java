@@ -72,21 +72,25 @@ public class Cluster {
 	{
 		Class.forName("com.mysql.jdbc.Driver");	
 		Connection conn = DriverManager.getConnection("jdbc:mysql://" + DBINFO, DBUSERNAME, DBPASSWD);
-		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);//可滚动的
+		Statement stmt;
 		String sql = "Select ID from KeywordTable where keyword = '" + keyword +"'";
-		ResultSet rs = stmt.executeQuery(sql);
-		if(!rs.next())
-		{
-			return 1;//没有找到关键字。需要抓取
+		ResultSet rs;
+		synchronized(this){
+			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);//可滚动的
+			rs = stmt.executeQuery(sql);
+			if(!rs.next())
+			{
+				return 1;//没有找到关键字。需要抓取
+			}
+			sql = "Select * from ResultTable where showpage = " + 
+					showpage +" and keywordid in (Select ID from KeywordTable where keyword = '" + keyword +"')";
+			rs = stmt.executeQuery(sql);
 		}
-		sql = "Select * from ResultTable where showpage = " + 
-				showpage +" and keywordid in (Select ID from KeywordTable where keyword = '" + keyword +"')";
-		rs = stmt.executeQuery(sql);
 		int n = 0;
 		Clusteredresult_Queue queue = new Clusteredresult_Queue();
 		if(rs.next())
 		{
-	        try {
+	        /*try {
 	            rs.last();
 	            if(rs.getRow() < 10)
 	            	return 3;//数据库没存全
@@ -94,7 +98,7 @@ public class Cluster {
 	        } catch (Exception e) {
 	            // TODO: handle exception
 	            e.printStackTrace();
-	        }
+	        }*/
 			do{
 				String linktitle = rs.getString("linktitle");
 				String linkurl = rs.getString("linkurl");
@@ -234,31 +238,32 @@ public class Cluster {
 		int size = list.size();
 		Class.forName("com.mysql.jdbc.Driver");	
 		Connection conn = DriverManager.getConnection("jdbc:mysql://" + DBINFO, DBUSERNAME, DBPASSWD);
-		Statement stmt = conn.createStatement();
-
-		String sql;
-		if(flag == 1)//需要在表中添加关键字再添加项
-		{
-			sql = "Insert into KeywordTable(keyword) values('" + keyword + "')";
-			stmt.executeUpdate(sql);
-		}
-		sql = "Select ID from KeywordTable where keyword = '" + keyword +"'";
-		ResultSet rs = stmt.executeQuery(sql);
-		rs.next();
-		int keywordid = Integer.parseInt(rs.getString("ID"));
-		for(int k = 0;k < size;k++)
-		{
-			queue = list.get(k);
-			Clusteredresult_Node p = queue.head;
-			while(p != null)
+		synchronized(this){
+			Statement stmt = conn.createStatement();
+	
+			String sql;
+			if(flag == 1)//需要在表中添加关键字再添加项
 			{
-			sql = "Insert into ResultTable(keywordid,linktitle,linkurl,linkabstract,showpage,formresultnum,resultnum) values(" + keywordid +
-					",'" + p.gettitle() +"','" + p.geturl() +"','" + p.getabs() +"'," + showpage + "," + p.getid() + "," + k + ")";
-			stmt.executeUpdate(sql);
-			p = p.next;
+				sql = "Insert into KeywordTable(keyword) values('" + keyword + "')";
+				stmt.executeUpdate(sql);
+			}
+			sql = "Select ID from KeywordTable where keyword = '" + keyword +"'";
+			ResultSet rs = stmt.executeQuery(sql);
+			rs.next();
+			int keywordid = Integer.parseInt(rs.getString("ID"));
+			for(int k = 0;k < size;k++)
+			{
+				queue = list.get(k);
+				Clusteredresult_Node p = queue.head;
+				while(p != null)
+				{
+				sql = "Insert into ResultTable(keywordid,linktitle,linkurl,linkabstract,showpage,formresultnum,resultnum) values(" + keywordid +
+						",'" + p.gettitle() +"','" + p.geturl() +"','" + p.getabs() +"'," + showpage + "," + p.getid() + "," + k + ")";
+				stmt.executeUpdate(sql);
+				p = p.next;
+				}
 			}
 		}
-		
 		workindex = getwork(keyword, showpage);//因为index可能发生变化必须重新获取，这里其实应该对worklist进行上锁。
 		removework(workindex);//删除任务
 		System.out.println("结束...");

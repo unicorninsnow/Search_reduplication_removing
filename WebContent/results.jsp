@@ -51,7 +51,7 @@
 	//返回函数
 	function onSearch() {
 		var content = document.getElementById("content").value;
-		content = encodeURI(encodeURI(content));
+		content = encodeURIComponent(encodeURIComponent(content));
 		//document.getElementById("content").value = encodeURI(content);
 		window.location.href = "results.jsp?wd=" + content;
 	}
