@@ -117,7 +117,7 @@
 
 	function changeurl() {
 		if (http_request.readyState == 4) {
-			if (http_request.status == 0 || http_request.status == 200) {
+			if (http_request.status == 200) {
 				var result = http_request.responseText;
 				var resultlist = result.split(',');
 				var i = 0;

@@ -69,7 +69,7 @@ function changeurl() {
 									+ "' target='_blank'>  查看合并后的结果  </a>";
     var d=document.getElementById("s_tab");
 	if (http_request.readyState == 4) {
-		if (http_request.status == 0 || http_request.status == 200) {
+		if (http_request.status == 200) {
             d.innerHTML = d.innerHTML + "&nbsp;&nbsp;" +inserthtml;
             
 		} else {//http_request.status != 200
