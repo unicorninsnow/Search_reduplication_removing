@@ -5,7 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -72,19 +72,23 @@ public class Cluster {
 	{
 		Class.forName("com.mysql.jdbc.Driver");	
 		Connection conn = DriverManager.getConnection("jdbc:mysql://" + DBINFO, DBUSERNAME, DBPASSWD);
-		Statement stmt;
-		String sql = "Select ID from KeywordTable where keyword = '" + keyword +"'";
+		PreparedStatement stmt;
+		String sql = "Select ID from KeywordTable where keyword = ?";
+		
 		ResultSet rs;
 		synchronized(this){
-			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);//可滚动的
-			rs = stmt.executeQuery(sql);
+			stmt = conn.prepareStatement(sql,ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);//可滚动的
+			stmt.setString(1, keyword);
+			rs = stmt.executeQuery();
 			if(!rs.next())
 			{
 				return 1;//没有找到关键字。需要抓取
 			}
-			sql = "Select * from ResultTable where showpage = " + 
-					showpage +" and keywordid in (Select ID from KeywordTable where keyword = '" + keyword +"')";
-			rs = stmt.executeQuery(sql);
+			sql = "Select * from ResultTable where showpage = ? and keywordid in (Select ID from KeywordTable where keyword = ?)";
+			stmt = conn.prepareStatement(sql,ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);//可滚动的
+			stmt.setInt(1, showpage);
+			stmt.setString(2, keyword);
+			rs = stmt.executeQuery();
 		}
 		int n = 0;
 		Clusteredresult_Queue queue = new Clusteredresult_Queue();
@@ -239,16 +243,20 @@ public class Cluster {
 		Class.forName("com.mysql.jdbc.Driver");	
 		Connection conn = DriverManager.getConnection("jdbc:mysql://" + DBINFO, DBUSERNAME, DBPASSWD);
 		synchronized(this){
-			Statement stmt = conn.createStatement();
+			PreparedStatement stmt;
 	
 			String sql;
 			if(flag == 1)//需要在表中添加关键字再添加项
 			{
-				sql = "Insert into KeywordTable(keyword) values('" + keyword + "')";
-				stmt.executeUpdate(sql);
+				sql = "Insert into KeywordTable(keyword) values(?)";
+				stmt = conn.prepareStatement(sql);
+				stmt.setString(1, keyword);
+				stmt.executeUpdate();
 			}
-			sql = "Select ID from KeywordTable where keyword = '" + keyword +"'";
-			ResultSet rs = stmt.executeQuery(sql);
+			sql = "Select ID from KeywordTable where keyword = ?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, keyword);
+			ResultSet rs = stmt.executeQuery();
 			rs.next();
 			int keywordid = Integer.parseInt(rs.getString("ID"));
 			for(int k = 0;k < size;k++)
@@ -257,9 +265,18 @@ public class Cluster {
 				Clusteredresult_Node p = queue.head;
 				while(p != null)
 				{
-				sql = "Insert into ResultTable(keywordid,linktitle,linkurl,linkabstract,showpage,formresultnum,resultnum) values(" + keywordid +
-						",'" + p.gettitle() +"','" + p.geturl() +"','" + p.getabs() +"'," + showpage + "," + p.getid() + "," + k + ")";
-				stmt.executeUpdate(sql);
+				sql = "Insert into ResultTable" +
+						"(keywordid,linktitle,linkurl,linkabstract,showpage,formresultnum,resultnum) " +
+						"values(?, ?, ?, ?, ?, ?, ?)";
+				stmt = conn.prepareStatement(sql);
+				stmt.setInt(1, keywordid);
+				stmt.setString(2, p.gettitle());
+				stmt.setString(3, p.geturl());
+				stmt.setString(4, p.getabs());
+				stmt.setInt(5, showpage);
+				stmt.setInt(6, p.getid());
+				stmt.setInt(7, k);
+				stmt.executeUpdate();
 				p = p.next;
 				}
 			}
