@@ -78,7 +78,7 @@
 	}
 	//以下是异步刷新
 	function makeajax(){
-		url_quest = 'getrealurl.jsp?wd=' + encodeURI(encodeURI('<%=content %>')) + '&page=' + '<%=nowpage %>';
+		url_quest = 'getrealurl.jsp?wd=' + encodeURIComponent(encodeURIComponent('<%=content%>')) + '&page=' + '<%=nowpage%>';
 		makeRequest(url_quest);
 	}
 	function makeRequest(url) {
