@@ -51,7 +51,7 @@
 	//返回函数
 	function onSearch() {
 		var content = document.getElementById("content").value;
-		content = encodeURI(encodeURI(content));
+		content = encodeURIComponent(encodeURIComponent(content));
 		//document.getElementById("content").value = encodeURI(content);
 		window.location.href = "results.jsp?wd=" + content;
 	}
@@ -78,65 +78,62 @@
 	}
 	//以下是异步刷新
 	function makeajax(){
-		url_quest = 'getrealurl.jsp?wd=' + encodeURI(encodeURI('<%=content %>')) + '&page=' + '<%=nowpage %>';
+		url_quest = 'getrealurl.jsp?wd=' + encodeURIComponent(encodeURIComponent('<%=content%>')) + '&page=' + '<%=nowpage%>';
 		makeRequest(url_quest);
 	}
 	function makeRequest(url) {
- 	http_request = false;
- 	if (window.XMLHttpRequest) {
- 	 	http_request = new XMLHttpRequest();
-  		if (http_request.overrideMimeType){
-   		http_request.overrideMimeType('text/xml');
-  		}
- 	} else if (window.ActiveXObject) {
-  		try{
-   			http_request = new ActiveXObject("Msxml2.XMLHTTP");
-  		} catch (e) {
-   			try {
-    			http_request = new ActiveXObject("Microsoft.XMLHTTP");
-   			} catch (e) {
-   				}	
-  		}
- 	}
- 	if (!http_request) {
-  	alert("您的浏览器不支持当前操作，请使用 IE 5.0 以上版本!");
-  	return false;
- 	}
- 
+		http_request = false;
+		if (window.XMLHttpRequest) {
+			http_request = new XMLHttpRequest();
+			if (http_request.overrideMimeType) {
+				http_request.overrideMimeType('text/xml');
+			}
+		} else if (window.ActiveXObject) {
+			try {
+				http_request = new ActiveXObject("Msxml2.XMLHTTP");
+			} catch (e) {
+				try {
+					http_request = new ActiveXObject("Microsoft.XMLHTTP");
+				} catch (e) {
+				}
+			}
+		}
+		if (!http_request) {
+			alert("您的浏览器不支持当前操作，请使用 IE 5.0 以上版本!");
+			return false;
+		}
 
-	//定义页面调用的方法changeurl,没有();
- 	http_request.onreadystatechange = changeurl;
- 	http_request.open('GET', url, true);
+		//定义页面调用的方法changeurl,没有();
+		http_request.onreadystatechange = changeurl;
+		http_request.open('GET', url, true);
 
-	//禁止IE缓存
- 	http_request.setRequestHeader("If-Modified-Since","0");
+		//禁止IE缓存
+		http_request.setRequestHeader("If-Modified-Since", "0");
 
-	//发送数据
-	http_request.send(null);
+		//发送数据
+		http_request.send(null);
 
+	}
 
- }
-
-function changeurl() {
- 	if (http_request.readyState == 4) {
-  		if (http_request.status == 0 || http_request.status == 200) {
-   			var result = http_request.responseText;
-   			var resultlist = result.split(',');
-   			var i = 0;
-   			for(i = 0;i < resultlist.length;i+=2)
-   			{
-   				var Id = 0;
-   				try{
-   					Id = parseInt(resultlist[i]);
-   					document.getElementById ('url' + Id).innerHTML=resultlist[i+1];
-   				} catch (e) {
-   					break;
-   				}
-   			}
-  		} else {//http_request.status != 200
-  		}
- 	}
-}
+	function changeurl() {
+		if (http_request.readyState == 4) {
+			if (http_request.status == 200) {
+				var result = http_request.responseText;
+				var resultlist = result.split(',');
+				var i = 0;
+				for (i = 0; i < resultlist.length; i += 2) {
+					var Id = 0;
+					try {
+						Id = parseInt(resultlist[i]);
+						document.getElementById('url' + Id).innerHTML = resultlist[i + 1];
+					} catch (e) {
+						break;
+					}
+				}
+			} else {//http_request.status != 200
+			}
+		}
+	}
 </script>
 <link rel="stylesheet" type="text/css" media="all" href="css/style.css">
 <link rel="stylesheet" type="text/css" href="css/buttons.css" />

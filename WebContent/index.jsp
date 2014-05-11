@@ -29,7 +29,7 @@
 	<script type="text/javascript">
 		function onSearch() {
 			var content = document.getElementById("content").value;
-			content = encodeURI(encodeURI(content));
+			content = encodeURIComponent(encodeURIComponent(content));
 			window.location.href = "results.jsp?wd=" + content;
 		}
 	</script>

@@ -94,8 +94,8 @@ public class Search_engine_process {
 	 */
 	public void extractLinks_baidu(Parser parser, int search_page) throws Exception {
 		/* 设定符合百度的结果链接块过滤方式 并由此对解析器的内容进行过滤 */
-		NodeFilter result_filter_regu = new HasAttributeFilter("class", "result");
-		NodeFilter result_filter_op = new HasAttributeFilter("class", "result-op");
+		NodeFilter result_filter_regu = new HasAttributeFilter("class", "result c-container");
+		NodeFilter result_filter_op = new HasAttributeFilter("class", "result-op c-container");
 		OrFilter result_filter = new OrFilter(result_filter_regu, result_filter_op);
 		NodeList nodes = parser.extractAllNodesThatMatch(result_filter);
 
@@ -120,12 +120,13 @@ public class Search_engine_process {
 					/* class="result"的正常情况 */
 
 					// 获取结果块的第一个tr结点 trNode 即有效内容的tr结点
-					NodeFilter trFilter = new TagNameFilter("tr");
+					/*NodeFilter trFilter = new TagNameFilter("tr");
 					NodeList trNodeList = new NodeList();
 					resultNode.collectInto(trNodeList, trFilter);
 					if (trNodeList.size() == 0)
 						throw new Exception("no tr tag.errrrrrrrrrrr.");
-					Node trNode = trNodeList.elementAt(0);
+					Node trNode = trNodeList.elementAt(0);*/
+					Node trNode = resultNode;
 
 					/* 处理链接标题和链接URL(百度跳转URL) */
 					// 有效的真正链接结点(包含标题和URL信息的最精确的结点)
