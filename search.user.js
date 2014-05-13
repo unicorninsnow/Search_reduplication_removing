@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name       Search script
 // @namespace  http://oubeichen.com/
-// @version    0.1
+// @version    0.2
 // @description  创新项目用脚本，用于在百度搜索时，自动显示链接到相同关键词和相同页码的创新项目搜索结果
-// @include    http://www.baidu.com/s*
-// @include    http://baidu.com/s*
+// @include    http://www.baidu.com/*
+// @include    http://baidu.com/*
 // @copyright  2014, oubeichen
 // ==/UserScript==
 
@@ -77,5 +77,5 @@ function changeurl() {
 		}
 	}
 }
-
-makeajax();
+if(keyword != null)
+	makeajax();

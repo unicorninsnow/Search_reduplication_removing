@@ -94,8 +94,8 @@ public class Search_engine_process {
 	 */
 	public void extractLinks_baidu(Parser parser, int search_page) throws Exception {
 		/* 设定符合百度的结果链接块过滤方式 并由此对解析器的内容进行过滤 */
-		NodeFilter result_filter_regu = new HasAttributeFilter("class", "result c-container");
-		NodeFilter result_filter_op = new HasAttributeFilter("class", "result-op c-container");
+		NodeFilter result_filter_regu = new HasAttributeFilter("class", "result c-container ");
+		NodeFilter result_filter_op = new HasAttributeFilter("class", "result-op c-container xpath-log");
 		OrFilter result_filter = new OrFilter(result_filter_regu, result_filter_op);
 		NodeList nodes = parser.extractAllNodesThatMatch(result_filter);
 
