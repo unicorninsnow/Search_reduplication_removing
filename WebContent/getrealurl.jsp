@@ -4,6 +4,8 @@
 <%@ page import="java.net.URLDecoder"%>
 <%
 /*该页用于后台运行抓取操作，并返回真实url用于异步刷新*/
+	response.setHeader("Access-Control-Allow-Origin", "http://www.baidu.com");//解决跨域问题
+	response.setHeader("Access-Control-Allow-Headers", "If-Modified-Since");//暂时什么也不管只管返回200
 	String content = request.getParameter("wd");
 	if (content == null) {
 		content = "";
