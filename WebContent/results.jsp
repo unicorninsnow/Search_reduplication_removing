@@ -177,7 +177,7 @@
 			%>
 			<li style="list-style-type: none;">
 				<div class="difres">
-					<a href="<%=node.geturl()%>" onmousedown="" target="_blank"><%=node.gettitle()%></a>
+					<a href="<%=node.geturl()%>" onmousedown="" target="_blank"><%=node.gettitle(content)%></a>
 					<div class="s">
 						<div>
 							<div class="url" id="url<%=node.getid()%>"
@@ -186,7 +186,7 @@
 								</cite>
 							</div>
 							<div class="cont"></div>
-							<span class="st" style="font-size: 13px;"><%=node.getabs()%></span>
+							<span class="st" style="font-size: 13px;"><%=node.getabs(content)%></span>
 						</div>
 					</div>
 					<!-- 
@@ -195,7 +195,7 @@
 						<ul>
 							<%nodep = node.getnext();
 						while (nodep != null) {%>
-							<li><a href="<%=nodep.geturl()%>"  target="_blank"><%=nodep.gettitle()%></a>
+							<li><a href="<%=nodep.geturl()%>"  target="_blank"><%=nodep.gettitle(content)%></a>
 							</li>
 							<%nodep = nodep.getnext();
 						}%>
@@ -215,7 +215,7 @@
 									<%
 										while (nodep != null) {
 									%>
-									<li><a href="<%=nodep.geturl()%>" target="_blank"><%=nodep.gettitle()%></a>
+									<li><a href="<%=nodep.geturl()%>" target="_blank"><%=nodep.gettitle(content)%></a>
 										<div class="url" id="url<%=nodep.getid()%>"
 											style="white-space:nowrap;color: rgb(0, 153, 51);">
 											<%// if(dontajax) {%>
