@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name       Search script
 // @namespace  http://oubeichen.com/
-// @version    0.2
+// @version    0.3
 // @description  创新项目用脚本，用于在百度搜索时，自动显示链接到相同关键词和相同页码的创新项目搜索结果
 // @include    http://www.baidu.com/*
 // @include    http://baidu.com/*
@@ -9,12 +9,18 @@
 // ==/UserScript==
 
 //定义一下本机创新项目的域名
-var host = "http://localhost:8899/Search_reduplication_removing/";
+var host = "http://localhost:8686/Search_reduplication_removing/";
 
+var loc = location.href;
 function getQueryString(name) {
     var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-    var r = window.location.search.substr(1).match(reg);
-    if (r != null) return decodeURIComponent(r[2]); return null;
+	var r = loc.indexOf("baidu.com/#");
+	if(r != -1){
+		r = loc.substring(r + 11).match(reg);
+	}else{
+		r = window.location.search.substr(1).match(reg);;
+    }
+	if (r != null) return decodeURIComponent(r[2]); return null;
 }
 var page = getQueryString("pn");
 if(page === null)
