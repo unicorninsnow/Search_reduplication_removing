@@ -287,6 +287,7 @@ public class Cluster {
 		return false;//需要输出
 	}
 	
+	
 	ArrayList<String> strlist = new ArrayList<String>();
 	Clusteredresult_Queue queue;
 	
@@ -344,7 +345,8 @@ public class Cluster {
 				title = res.getLink_title().toString();
 				url = res.getLink_url().toString();
 				abs = res.getLink_abstract().toString();
-				text = res.getLink_text().toString();
+//				text = res.getLink_text().toString();
+				text = res.getLink_abstract().toString();
 				}catch(Exception e)
 				{
 					if(text == null)
@@ -355,17 +357,10 @@ public class Cluster {
 				for(k = 0;k < size;k++)
 				{
 
-					//output1.write("text1: "+ text + "\n");
-					//output1.write("text2: " + strlist.get(k) + "\n");
-					try {
-						if(Similarity_Judgement.similarity_judge(text,strlist.get(k),SIMILARITY_JUDGE_ALGO))
-						{
-							//output1.write("The Same!\n");
-							break;
-						}
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					if(Similarity_Judgement.title_judge(text,strlist.get(k)))
+					{
+						//output1.write("The Same!\n");
+						break;
 					}
 				}
 				if(k == size)//没有近似的
