@@ -27,7 +27,15 @@ public class Clusteredresult_Node
 	}
 	public String gettitle(String key)
 	{
-		return filtstr(title, key); 
+		key = key.replaceAll("[+'\",]", "");
+		String wordReg = "(?i)" + key;//用(?i)来忽略大小写  
+		StringBuffer sb = new StringBuffer();  
+		Matcher matcher = Pattern.compile(wordReg).matcher(title);  
+		while(matcher.find()){  
+			 matcher.appendReplacement(sb, "<font color='red'>"+matcher.group()+"</font>");//这样保证了原文的大小写没有发生变化
+		}
+		matcher.appendTail(sb);  
+		return sb.toString(); 
 	}
 	public String getabs()
 	{
@@ -35,25 +43,15 @@ public class Clusteredresult_Node
 	}
 	public String getabs(String key)
 	{
-		return filtstr(abs, key);
-	}
-	private String filtstr(String text, String orgkey)
-	{
-		String keywords[] = orgkey.replaceAll("[+'\",]", " ").split(" ");
-		int size = keywords.length;
-		StringBuffer sb = new StringBuffer();
-		StringBuffer wordRegsb = new StringBuffer("(");
-		for(int i = 0;i < size - 1; i++){
-			wordRegsb.append("(?i)" + keywords[i] + "|");//用(?i)来忽略大小写  
-		}
-		wordRegsb.append("(?i)" + keywords[size - 1] + ")");
-		Matcher matcher = Pattern.compile(wordRegsb.toString()).matcher(abs);  
-		System.out.println(wordRegsb.toString());
+		key = key.replaceAll("[+'\",]", "");
+		String wordReg = "(?i)" + key;//用(?i)来忽略大小写  
+		StringBuffer sb = new StringBuffer();  
+		Matcher matcher = Pattern.compile(wordReg).matcher(abs);  
 		while(matcher.find()){  
-			matcher.appendReplacement(sb, "<font color='red'>"+matcher.group()+"</font>");//这样保证了原文的大小写没有发生变化
+			 matcher.appendReplacement(sb, "<font color='red'>"+matcher.group()+"</font>");//这样保证了原文的大小写没有发生变化
 		}
-		matcher.appendTail(sb);
-		return sb.toString();
+		matcher.appendTail(sb);  
+		return sb.toString(); 
 	}
 	public int getid()
 	{
