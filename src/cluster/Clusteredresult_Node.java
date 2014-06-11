@@ -47,8 +47,7 @@ public class Clusteredresult_Node
 			wordRegsb.append("(?i)" + keywords[i] + "|");//用(?i)来忽略大小写  
 		}
 		wordRegsb.append("(?i)" + keywords[size - 1] + ")");
-		Matcher matcher = Pattern.compile(wordRegsb.toString()).matcher(abs);  
-		System.out.println(wordRegsb.toString());
+		Matcher matcher = Pattern.compile(wordRegsb.toString()).matcher(text);  
 		while(matcher.find()){  
 			matcher.appendReplacement(sb, "<font color='red'>"+matcher.group()+"</font>");//这样保证了原文的大小写没有发生变化
 		}
