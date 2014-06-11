@@ -45,7 +45,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Result:<%=Clusteredresult_Node.encodehtml(content)%></title>
+<title>Result:<%=content %></title>
 <script type="text/javascript" src="js/menu.js"></script>
 <script type="text/javascript">
 	//返回函数
@@ -147,7 +147,7 @@
 
 		<div class="buttons">
 			<input type="text" maxlength="2048" size="41" id="content" name="wd"
-				value="<%=Clusteredresult_Node.encodehtml(content)%>" style="font-size:16px;width:300px; height:25px"
+				value="<%=content%>" style="font-size:16px;width:300px; height:25px"
 				onkeypress="if(event.keyCode==13){onSearch();}" />
 			<button type="submit" class="positive" onclick=onSearch();>
 				<img src="images/apply2.png" alt="" /> Search
