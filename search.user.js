@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name       Search script
 // @namespace  http://oubeichen.com/
-// @version    0.3
+// @version    0.31
 // @description  创新项目用脚本，用于在百度搜索时，自动显示链接到相同关键词和相同页码的创新项目搜索结果
 // @include    http://www.baidu.com/*
 // @include    http://baidu.com/*
@@ -29,7 +29,7 @@ else
     page = page / 10 + 1;
 //由于我们一页就有2page，所以要除以2.
 page = parseInt((page + 1) / 2);
-var keyword = getQueryString("wd").replace(/[\"',]/g, "");
+var keyword = getQueryString("wd").replace(/[\"',]/g, "").replace(/\+/g," ");
 
 //以下是异步刷新
 function makeajax(){
