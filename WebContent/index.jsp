@@ -18,7 +18,7 @@
 		<div class="buttons">
 			<input type="text" maxlength="2048" size="51" id="content" name="wd"
 				value="" style="font-size:16px;height:25px;"
-				onkeypress="if(event.keyCode==13||event.keyCode==108){onSearch();}" />
+				onkeypress="if(event.keyCode==13){onSearch();}" />
 			<br /> <br /> <br />
 
 			<button type="submit" class="positive" onclick=onSearch();>
