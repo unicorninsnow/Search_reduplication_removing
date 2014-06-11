@@ -39,14 +39,20 @@ public class Clusteredresult_Node
 	}
 	private String filtstr(String text, String orgkey)
 	{
-		String keywords[] = orgkey.replaceAll("[+'\",]", " ").split(" ");
+		String replace = orgkey.replaceAll("[+'\",]", " ");
+		String keywords[] = replace.split(" ");
 		int size = keywords.length;
 		StringBuffer sb = new StringBuffer();
 		StringBuffer wordRegsb = new StringBuffer("(");
 		for(int i = 0;i < size - 1; i++){
-			wordRegsb.append("(?i)" + keywords[i] + "|");//用(?i)来忽略大小写  
+			if(!(keywords[i].equals(" ") || keywords[i].equals("")))
+				wordRegsb.append("(?i)" + keywords[i] + "|");//用(?i)来忽略大小写  
 		}
-		wordRegsb.append("(?i)" + keywords[size - 1] + ")");
+		if(!(keywords[size - 1].equals(" ") || keywords[size - 1].equals("")))
+			wordRegsb.append("(?i)" + keywords[size - 1] + ")");
+		else
+			wordRegsb.append(")");
+		//System.out.println(wordRegsb.toString());
 		Matcher matcher = Pattern.compile(wordRegsb.toString()).matcher(text);  
 		while(matcher.find()){  
 			matcher.appendReplacement(sb, "<font color='red'>"+matcher.group()+"</font>");//这样保证了原文的大小写没有发生变化
