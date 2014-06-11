@@ -39,7 +39,7 @@ public class Clusteredresult_Node
 	}
 	private String filtstr(String text, String orgkey)
 	{
-		String replace = orgkey.replaceAll("[+'\",]", " ");
+		String replace = orgkey.replaceAll("[+'\",<>]", " ");
 		String keywords[] = replace.split(" ");
 		int size = keywords.length;
 		StringBuffer sb = new StringBuffer();
@@ -69,6 +69,23 @@ public class Clusteredresult_Node
 	public Clusteredresult_Node getnext()
 	{
 		return next;
+	}
+
+	public static String encodehtml(String content) {
+		if (content == null)
+			return "";
+		String html = content;
+
+		// html = html.replace( "'", "&apos;");
+		html = html.replaceAll("&", "&amp;");
+		html = html.replace("\"", "&quot;"); // "
+		html = html.replace("\t", "&nbsp;&nbsp;");// 替换跳格
+		html = html.replace(" ", "&nbsp;");// 替换空格
+		html = html.replace("<", "&lt;");
+
+		html = html.replaceAll(">", "&gt;");
+
+		return html;
 	}
 }
 
