@@ -9,7 +9,7 @@
 // ==/UserScript==
 
 //定义一下本机创新项目的域名
-var host = "http://localhost:8686/Search_reduplication_removing/";
+var host = "http://localhost:8080/Search_reduplication_removing/";
 
 var loc = location.href;
 function getQueryString(name) {
@@ -29,7 +29,7 @@ else
     page = page / 10 + 1;
 //由于我们一页就有2page，所以要除以2.
 page = parseInt((page + 1) / 2);
-var keyword = getQueryString("wd");
+var keyword = getQueryString("wd").replace(/[\"',]/g, "");
 
 //以下是异步刷新
 function makeajax(){

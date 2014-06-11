@@ -27,6 +27,7 @@ public class Clusteredresult_Node
 	}
 	public String gettitle(String key)
 	{
+		key = key.replaceAll("[+'\",]", "");
 		String wordReg = "(?i)" + key;//用(?i)来忽略大小写  
 		StringBuffer sb = new StringBuffer();  
 		Matcher matcher = Pattern.compile(wordReg).matcher(title);  
@@ -42,6 +43,7 @@ public class Clusteredresult_Node
 	}
 	public String getabs(String key)
 	{
+		key = key.replaceAll("[+'\",]", "");
 		String wordReg = "(?i)" + key;//用(?i)来忽略大小写  
 		StringBuffer sb = new StringBuffer();  
 		Matcher matcher = Pattern.compile(wordReg).matcher(abs);  
